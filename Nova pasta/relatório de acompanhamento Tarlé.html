@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Giancarlo Personal Trainer – Sistema de Acompanhamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #0050ff;
+      --primary-soft: #e3edff;
+      --primary-dark: #0030a8;
+      --accent: #16a34a;
+      --danger: #dc2626;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --border: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --radius: 12px;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* TELA INICIAL (SEM SENHA) */
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    .login-wrapper {
+      max-width: 420px;
+      width: 100%;
+      padding: 20px 18px;
+      background: #ffffff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .login-wrapper h1 {
+      margin: 0 0 4px 0;
+      font-size: 1.3rem;
+      text-align: center;
+      color: var(--primary-dark);
+    }
+
+    .login-wrapper p {
+      margin: 0 0 14px 0;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 7px 9px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      background-color: #f9fafb;
+      color: var(--text-main);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: var(--text-main);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn:hover { filter: brightness(1.03); }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* APP PRINCIPAL */
+    #appScreen { display: false; }
+
+    header {
+      background: linear-gradient(135deg, #ffffff, #e5edff);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid #e5e7eb;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0, #111827 40%, #000000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: 2px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::before {
+      content: "";
+      position: absolute;
+      width: 160%;
+      height: 2px;
+      background: var(--primary);
+      transform: rotate(-30deg);
+    }
+
+    .logo-mark span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-title h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .header-title p {
+      margin: 2px 0 0 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      color: var(--text-main);
+    }
+
+    .card-title {
+      margin: 0 0 6px 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .card-subtitle {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background-color: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .badge-green {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 10px 0 6px 0;
+      color: var(--primary-dark);
+    }
+
+    .group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .group small {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .status-bar {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--accent);
+      min-height: 16px;
+    }
+
+    .status-error { color: var(--danger); }
+
+    .summary-item {
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .summary-item:last-child { border-bottom: none; }
+
+    .summary-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .summary-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background:#e5e7eb;
+      color: #374151;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+
+    .preview-box {
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+      padding: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #f9fafb;
+      margin-top: 6px;
+      white-space: pre-wrap;
+    }
+
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      margin-top: 4px;
+    }
+
+    .checkbox-row label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: var(--text-main);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .caps {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .section-divider {
+      margin: 10px 0;
+      border-top: 1px dashed var(--border);
+    }
+
+    @media (max-width: 880px) {
+      .header-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TELA INICIAL SIMPLES -->
+<div id="loginScreen">
+  <div class="login-wrapper">
+    <h1>Giancarlo Personal Trainer</h1>
+    <p>Sistema de Acompanhamento de Treinos</p>
+
+    <label for="tipoAcesso">Perfil de acesso</label>
+    <select id="tipoAcesso">
+      <option value="cliente">Aluno</option>
+      <option value="admin">Coach (Gian)</option>
+    </select>
+
+    <button class="btn btn-primary" id="btnEntrar" style="width:100%;margin-top:8px;">Acessar</button>
+
+    <p class="hint" style="margin-top:10px;">
+      Escolha se está acessando como <strong>Aluno</strong> ou como <strong>Coach</strong> e clique em Acessar.
+      Nesta versão não há login com senha.
+    </p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="app-wrapper" style="display:none;">
+  <header>
+    <div class="header-left">
+      <div class="logo-title">
+        <div class="logo-mark"><span>G</span></div>
+        <div class="header-title">
+          <h1>Giancarlo Personal Trainer</h1>
+          <p id="subHeader">Sistema de Acompanhamento de Treinos</p>
+        </div>
+      </div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-view="treino">📋 Treino do Dia</button>
+        <button class="tab-btn" data-view="mensal">📊 Relatório Mensal</button>
+        <button class="tab-btn" data-view="perfil">👤 Perfil</button>
+        <button class="tab-btn" data-view="historico">🕐 Histórico</button>
+        <button class="tab-btn admin-only" data-view="admin" style="display:none;">⚙️ Admin</button>
+        <button class="tab-btn admin-only" data-view="usuarios" style="display:none;">👥 Usuários</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="userInfo">Perfil: –</div>
+      <button class="btn btn-secondary" id="btnLogout" style="margin-top:6px;">Voltar</button>
+    </div>
+  </header>
+
+  <!-- TREINO DO DIA -->
+  <main id="view-treino" class="card">
+    <h2 class="card-title">
+      <span>Ficha de Treino Diário</span>
+      <span class="badge">Monitoramento TVP</span>
+    </h2>
+    <p class="card-subtitle">
+      Registre treino, sintomas da perna com TVP e respostas ao esforço.
+    </p>
+
+    <p class="hint"><strong>⚠️ Atenção:</strong> registre sintomas da perna com TVP antes, durante e após o treino.</p>
+
+    <div class="section-title">🧑 Identificação</div>
+    <div class="group">
+      <div>
+        <small>Cliente</small>
+        <input type="text" id="treinoCliente" placeholder="Nome do cliente" />
+      </div>
+      <div>
+        <small>Data</small>
+        <input type="date" id="treinoData" />
+      </div>
+      <div>
+        <small>Profissional</small>
+        <input type="text" id="treinoProfissional" placeholder="Giancarlo" />
+      </div>
+      <div>
+        <small>Horário</small>
+        <input type="time" id="treinoHorario" />
+      </div>
+    </div>
+
+    <div class="section-title">🌙 Avaliação Pré-Treino</div>
+    <div class="group">
+      <div>
+        <small>Horas de sono</small>
+        <input type="number" id="sonoHoras" min="0" max="24" step="0.5" />
+      </div>
+      <div>
+        <small>FC em repouso (bpm)</small>
+        <input type="number" id="fcRepouso" min="30" max="200" />
+      </div>
+      <div>
+        <small>Nível de cansaço pré-treino (0–10)</small>
+        <input type="number" id="cansacoPre" min="0" max="10" />
+      </div>
+      <div>
+        <small>Dor na perna com TVP (0–10)</small>
+        <input type="number" id="dorPre" min="0" max="10" />
+      </div>
+      <div>
+        <small>Inchaço na perna com TVP (0–10)</small>
+        <input type="number" id="inchacoPre" min="0" max="10" />
+      </div>
+    </div>
+
+    <div class="section-title">🏋️ Exercícios</div>
+    <div id="listaExercicios"></div>
+    <button class="btn btn-secondary" id="btnAddExercicio">+ Adicionar exercício</button>
+
+    <div class="section-title">❤️ Frequência Cardíaca</div>
+    <div class="group">
+      <div>
+        <small>FC média (bpm)</small>
+        <input type="number" id="fcMedia" min="30" max="220" />
+      </div>
+      <div>
+        <small>FC máxima (bpm)</small>
+        <input type="number" id="fcMax" min="30" max="220" />
+      </div>
+      <div>
+        <small>Zona de treino</small>
+        <select id="zonaTreino">
+          <option value="">Selecionar</option>
+          <option value="60-70">60–70% • aeróbio leve</option>
+          <option value="70-80">70–80% • força moderada</option>
+          <option value="80-90">80–90% • alta intensidade</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title">🩺 Sintomas Pós-Treino – Perna TVP</div>
+    <div class="group">
+      <div>
+        <small>Dor pós-treino (0–10)</small>
+        <input type="number" id="dorPos" min="0" max="10" />
+      </div>
+      <div>
+        <small>Inchaço pós-treino (0–10)</small>
+        <input type="number" id="inchacoPos" min="0" max="10" />
+      </div>
+      <div>
+        <small>Sensação de peso</small>
+        <select id="pesoPerna">
+          <option value="">Selecionar</option>
+          <option value="nenhuma">Nenhuma</option>
+          <option value="leve">Leve</option>
+          <option value="moderada">Moderada</option>
+          <option value="intensa">Intensa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title">🚨 Sinais de Alerta</div>
+    <div class="checkbox-row">
+      <label><input type="checkbox" id="alertaFaltaAr" /> Falta de ar anormal</label>
+      <label><input type="checkbox" id="alertaTontura" /> Tontura forte / quase desmaio</label>
+      <label><input type="checkbox" id="alertaPeito" /> Dor no peito</label>
+      <label><input type="checkbox" id="alertaPalp" /> Palpitações importantes</label>
+      <label><input type="checkbox" id="alertaSang" /> Sangramento / hematoma relevante</label>
+    </div>
+
+    <div class="section-title">✍️ Fechamento do Dia</div>
+    <div class="group">
+      <div>
+        <small>Cansaço geral pós-treino (0–10)</small>
+        <input type="number" id="cansacoPos" min="0" max="10" />
+      </div>
+      <div>
+        <small>Classificação do treino</small>
+        <select id="classTreino">
+          <option value="">Selecionar</option>
+          <option value="excelente">⭐ Excelente</option>
+          <option value="bom">✅ Bom</option>
+          <option value="regular">🔶 Regular</option>
+          <option value="ruim">❌ Ruim</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="comentarios"><span class="caps">Comentários e observações</span></label>
+    <textarea id="comentarios" placeholder="Comentários e observações do dia."></textarea>
+
+    <div class="section-divider"></div>
+
+    <div class="btn-row" style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-primary">💾 Salvar treino</button>
+      <button class="btn btn-secondary">👁️ Visualizar relatório</button>
+      <button class="btn btn-secondary">⬇️ Exportar .txt</button>
+      <button class="btn btn-secondary" id="btnGerarResumo">📝 Gerar resumo do dia</button>
+    </div>
+
+    <div class="preview-box" id="previewResumo">
+      <strong>Pré-visualização</strong><br>
+      Aqui você pode gerar um texto-resumo do dia para enviar ao cliente ou arquivar.
+    </div>
+
+    <div class="status-bar" id="statusTreino"></div>
+  </main>
+
+  <!-- RELATÓRIO MENSAL -->
+  <section id="view-mensal" class="card" style="display:none;">
+    <h2 class="card-title">
+      <span>Relatório Mensal</span>
+      <span class="badge">Visão por ciclo</span>
+    </h2>
+    <p class="card-subtitle">
+      Consolidado mensal (período, medidas, FC, sintomas TVP, desempenho).
+    </p>
+
+    <div class="section-title">📅 Período</div>
+    <div class="group">
+      <div><small>Cliente</small><input type="text" /></div>
+      <div><small>Início</small><input type="date" /></div>
+      <div><small>Fim</small><input type="date" /></div>
+    </div>
+
+    <div class="section-title">📏 Medidas Corporais</div>
+    <p class="hint">Início e fim do mês (peso, cinturas, membros com TVP etc.).</p>
+
+    <div class="group">
+      <div><small>Peso inicial (kg)</small><input type="number" /></div>
+      <div><small>Cintura inicial (cm)</small><input type="number" /></div>
+      <div><small>Quadril inicial (cm)</small><input type="number" /></div>
+      <div><small>Coxa D inicial (cm)</small><input type="number" /></div>
+      <div><small>Coxa E – TVP inicial (cm)</small><input type="number" /></div>
+      <div><small>Panturrilha D inicial (cm)</small><input type="number" /></div>
+      <div><small>Panturrilha E – TVP inicial (cm)</small><input type="number" /></div>
+      <div><small>Braço D inicial (cm)</small><input type="number" /></div>
+      <div><small>Braço E inicial (cm)</small><input type="number" /></div>
+    </div>
+
+    <div class="group">
+      <div><small>Peso final (kg)</small><input type="number" /></div>
+      <div><small>Cintura final (cm)</small><input type="number" /></div>
+      <div><small>Quadril final (cm)</small><input type="number" /></div>
+      <div><small>Coxa D final (cm)</small><input type="number" /></div>
+      <div><small>Coxa E – TVP final (cm)</small><input type="number" /></div>
+      <div><small>Panturrilha D final (cm)</small><input type="number" /></div>
+      <div><small>Panturrilha E – TVP final (cm)</small><input type="number" /></div>
+      <div><small>Braço D final (cm)</small><input type="number" /></div>
+      <div><small>Braço E final (cm)</small><input type="number" /></div>
+    </div>
+
+    <div class="section-title">❤️ FC – Resumo do Mês</div>
+    <div class="group">
+      <div><small>Musculação – FC média (bpm)</small><input type="number" /></div>
+      <div><small>Musculação – FC máxima (bpm)</small><input type="number" /></div>
+      <div><small>Aeróbio – FC média (bpm)</small><input type="number" /></div>
+      <div><small>Aeróbio – FC máxima (bpm)</small><input type="number" /></div>
+    </div>
+
+    <div class="section-title">🩺 Sintomas TVP – Visão Mensal</div>
+    <div class="group">
+      <div><small>Dor média em repouso (0–10)</small><input type="number" /></div>
+      <div><small>Dor média durante treinos (0–10)</small><input type="number" /></div>
+      <div><small>Pior dor registrada (0–10)</small><input type="number" /></div>
+    </div>
+
+    <div class="group">
+      <div>
+        <small>Tendência de inchaço</small>
+        <select>
+          <option>–</option>
+          <option>✅ Diminuiu</option>
+          <option>↔ Manteve</option>
+          <option>⚠️ Aumentou</option>
+        </select>
+      </div>
+      <div>
+        <small>Diferença de volume entre pernas</small>
+        <select>
+          <option>–</option>
+          <option>✅ Diminuiu</option>
+          <option>↔ Manteve</option>
+          <option>⚠️ Aumentou</option>
+        </select>
+      </div>
+      <div>
+        <small>Episódios de piora aguda</small>
+        <input type="text" />
+      </div>
+    </div>
+
+    <div class="section-title">📈 Evolução de Desempenho</div>
+    <button class="btn btn-secondary">+ Adicionar exercício</button>
+
+    <div class="section-title">📝 Avaliação do Profissional</div>
+    <textarea placeholder="Adaptação ao programa, resposta da perna com TVP, recomendações para o próximo mês e pontos para discutir com o médico."></textarea>
+
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-primary">💾 Salvar relatório</button>
+      <button class="btn btn-secondary">👁️ Visualizar</button>
+      <button class="btn btn-secondary">⬇️ Exportar .txt</button>
+    </div>
+  </section>
+
+  <!-- PERFIL -->
+  <section id="view-perfil" class="card" style="display:none;">
+    <h2 class="card-title">
+      <span>Perfil do Cliente</span>
+      <span class="badge">Dados básicos & clínicos</span>
+    </h2>
+
+    <div class="section-title">🆔 Dados Pessoais</div>
+    <div class="group">
+      <div><small>Nome completo</small><input type="text" /></div>
+      <div><small>Data de nascimento</small><input type="date" /></div>
+      <div><small>Altura (m)</small><input type="text" /></div>
+      <div><small>Peso base (kg)</small><input type="number" /></div>
+      <div><small>E-mail</small><input type="email" /></div>
+      <div><small>Telefone</small><input type="tel" /></div>
+    </div>
+
+    <div class="section-title">🏥 Dados Clínicos</div>
+    <div class="group">
+      <div><small>Diagnóstico principal</small><input type="text" /></div>
+      <div><small>Medicações em uso</small><input type="text" /></div>
+      <div><small>Outras condições / lesões</small><input type="text" /></div>
+    </div>
+
+    <div class="section-title">🎯 Programa e Objetivos</div>
+    <div class="group">
+      <div><small>Objetivo principal</small><input type="text" /></div>
+      <div><small>Restrições de exercício</small><input type="text" /></div>
+      <div><small>Profissional responsável / CREF</small><input type="text" /></div>
+    </div>
+
+    <div class="section-title">👥 Equipe Multidisciplinar</div>
+    <div class="group">
+      <div><small>Médico responsável</small><input type="text" /></div>
+      <div><small>Nutricionista</small><input type="text" /></div>
+      <div><small>Psicólogo</small><input type="text" /></div>
+      <div><small>Fisioterapeuta</small><input type="text" /></div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:8px;">💾 Salvar perfil</button>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section id="view-historico" class="card" style="display:none;">
+    <h2 class="card-title">
+      <span>Histórico de Treinos</span>
+      <span class="badge">Visão geral</span>
+    </h2>
+    <p class="card-subtitle">
+      Resumo de treinos salvos (quantidade, RPE médio, dor pré média, treinos excelentes).
+    </p>
+
+    <div class="summary-item">
+      <div class="summary-title">Treinos salvos</div>
+      <div class="summary-text"><span class="pill">0</span> Treinos salvos</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-title">RPE médio</div>
+      <div class="summary-text">–</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-title">Dor pré média</div>
+      <div class="summary-text">–</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-title">Treinos excelentes</div>
+      <div class="summary-text">0</div>
+    </div>
+
+    <div class="preview-box" style="margin-top:10px;">
+      Nenhum treino registrado ainda. Quando implementar armazenamento, você poderá listar e revisar sessões aqui.
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="view-admin" class="card" style="display:none;">
+    <h2 class="card-title">
+      <span>Painel Administrativo</span>
+      <span class="badge">Somente coach</span>
+    </h2>
+    <p class="card-subtitle">
+      Personalize rótulos e textos do formulário, mantendo o foco em TVP, carga adequada e recomendações.
+    </p>
+
+    <div class="section-title">✏️ Editar rótulos – Pré-treino</div>
+    <ol class="hint">
+      <li>Alerta TVP (texto do aviso)</li>
+      <li>Escala de cansaço pré-treino</li>
+      <li>Escala de dor pré-treino (TVP)</li>
+      <li>Escala de inchaço pré-treino (TVP)</li>
+    </ol>
+
+    <div class="section-title">✏️ Editar rótulos – Pós-treino</div>
+    <ol class="hint">
+      <li>Escala de dor pós-treino (TVP)</li>
+      <li>Escala de inchaço pós-treino (TVP)</li>
+      <li>Escala de cansaço pós-treino</li>
+    </ol>
+
+    <div class="section-title">✏️ Editar rótulos – Sinais de Alerta</div>
+    <p class="hint">
+      Campos para personalizar mensagens de aviso (falta de ar, dor no peito, etc.).
+    </p>
+
+    <div class="section-title">🏷️ Configurações gerais</div>
+    <div class="group">
+      <div><small>Nome do profissional (aparece no cabeçalho)</small><input type="text" placeholder="Giancarlo Personal Trainer" /></div>
+      <div><small>CREF</small><input type="text" placeholder="021568-G" /></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-primary">✅ Aplicar alterações</button>
+      <button class="btn btn-secondary">↩️ Restaurar padrões</button>
+    </div>
+
+    <div class="status-bar">Alterações aplicadas com sucesso!</div>
+  </section>
+
+  <!-- USUÁRIOS -->
+  <section id="view-usuarios" class="card" style="display:none;">
+    <h2 class="card-title">
+      <span>Gerenciar Usuários</span>
+      <span class="badge">Somente coach</span>
+    </h2>
+
+    <p class="card-subtitle">
+      Cadastro simples de usuários locais (sem servidor), para organização na mesma máquina.
+    </p>
+
+    <div class="section-title">Usuários cadastrados</div>
+    <p class="hint">Nesta versão, a listagem é apenas ilustrativa.</p>
+
+    <div class="section-title">➕ Novo usuário</div>
+    <div class="group">
+      <div><small>Nome</small><input type="text" /></div>
+      <div><small>Usuário</small><input type="text" /></div>
+      <div><small>Senha</small><input type="password" /></div>
+      <div>
+        <small>Perfil</small>
+        <select>
+          <option>Cliente</option>
+          <option>Administrador</option>
+        </select>
+      </div>
+      <div><small>E-mail</small><input type="email" /></div>
+    </div>
+    <button class="btn btn-primary">➕ Adicionar usuário</button>
+  </section>
+</div>
+
+<script>
+  let usuarioAtual = null;
+
+  function mostrarView(id) {
+    document.querySelectorAll("main, section").forEach(sec => {
+      if (sec.id && sec.id.startsWith("view-")) {
+        sec.style.display = (sec.id === id) ? "" : "none";
+      }
+    });
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      const view = "view-" + btn.dataset.view;
+      btn.classList.toggle("active", view === id);
+    });
+  }
+
+  function entrarSemLogin() {
+    const tipo = document.getElementById("tipoAcesso").value;
+
+    usuarioAtual = {
+      tipo: tipo,
+      nome: tipo === "admin" ? "Coach (Gian)" : "Aluno"
+    };
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("appScreen").style.display = "block";
+
+    const userInfo = document.getElementById("userInfo");
+    if (userInfo) {
+      userInfo.textContent = `Perfil: ${usuarioAtual.nome}`;
+    }
+
+    // mostra abas admin se for coach
+    document.querySelectorAll(".admin-only").forEach(btn => {
+      btn.style.display = usuarioAtual.tipo === "admin" ? "inline-flex" : "none";
+    });
+
+    // data de hoje
+    const hoje = new Date().toISOString().slice(0,10);
+    const dataField = document.getElementById("treinoData");
+    if (dataField) dataField.value = hoje;
+
+    mostrarView("view-treino");
+  }
+
+  function logout() {
+    usuarioAtual = null;
+    document.getElementById("appScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
+  }
+
+  function criarLinhaExercicio() {
+    const container = document.getElementById("listaExercicios");
+    if (!container) return;
+    const wrapper = document.createElement("div");
+    wrapper.className = "card";
+    wrapper.style.boxShadow = "none";
+    wrapper.style.borderStyle = "dashed";
+    wrapper.style.marginBottom = "8px";
+
+    wrapper.innerHTML = `
+      <div class="group">
+        <div>
+          <small>Exercício</small>
+          <input type="text" placeholder="Nome do exercício" />
+        </div>
+        <div>
+          <small>Séries x Reps</small>
+          <input type="text" placeholder="Ex.: 3x10" />
+        </div>
+        <div>
+          <small>Carga / Observações</small>
+          <input type="text" placeholder="kg, RPE, lado TVP, etc." />
+        </div>
+      </div>
+    `;
+    container.appendChild(wrapper);
+  }
+
+  // Gera texto-resumo do dia para WhatsApp / relatório
+  function gerarResumoDoDia() {
+    const cliente = document.getElementById("treinoCliente").value || "Cliente";
+    const data = document.getElementById("treinoData").value || "";
+    const profissional = document.getElementById("treinoProfissional").value || "Profissional";
+    const horario = document.getElementById("treinoHorario").value || "";
+
+    const sono = document.getElementById("sonoHoras").value || "";
+    const fcRepouso = document.getElementById("fcRepouso").value || "";
+    const cansacoPre = document.getElementById("cansacoPre").value || "";
+    const dorPre = document.getElementById("dorPre").value || "";
+    const inchacoPre = document.getElementById("inchacoPre").value || "";
+
+    const fcMedia = document.getElementById("fcMedia").value || "";
+    const fcMax = document.getElementById("fcMax").value || "";
+    const zonaTreino = document.getElementById("zonaTreino").value || "";
+
+    const dorPos = document.getElementById("dorPos").value || "";
+    const inchacoPos = document.getElementById("inchacoPos").value || "";
+    const pesoPerna = document.getElementById("pesoPerna").value || "";
+
+    const cansacoPos = document.getElementById("cansacoPos").value || "";
+    const classTreino = document.getElementById("classTreino").value || "";
+    const comentarios = document.getElementById("comentarios").value || "";
+
+    const alertas = [];
+    if (document.getElementById("alertaFaltaAr").checked) alertas.push("falta de ar anormal");
+    if (document.getElementById("alertaTontura").checked) alertas.push("tontura forte/quase desmaio");
+    if (document.getElementById("alertaPeito").checked) alertas.push("dor no peito");
+    if (document.getElementById("alertaPalp").checked) alertas.push("palpitações importantes");
+    if (document.getElementById("alertaSang").checked) alertas.push("sangramento/hematoma relevante");
+
+    // Monta o texto
+    let texto = "";
+    texto += `Relatório do treino – ${cliente}\n`;
+    if (data || horario) {
+      texto += `Data/horário: ${data || "–"} ${horario ? "às " + horario : ""}\n`;
+    }
+    texto += `Profissional: ${profissional}\n\n`;
+
+    texto += `1) Pré-treino\n`;
+    if (sono || fcRepouso || cansacoPre) {
+      texto += `• Sono: ${sono || "não informado"} h | FC repouso: ${fcRepouso || "–"} bpm | Cansaço: ${cansacoPre || "–"}/10\n`;
+    }
+    texto += `• Perna com TVP – dor pré: ${dorPre || "–"}/10 | inchaço pré: ${inchacoPre || "–"}/10\n\n`;
+
+    texto += `2) Durante o treino\n`;
+    texto += `• FC média: ${fcMedia || "–"} bpm | FC máx.: ${fcMax || "–"} bpm`;
+    if (zonaTreino) {
+      texto += ` | Zona alvo: ${zonaTreino}%`;
+    }
+    texto += `\n\n`;
+
+    texto += `3) Pós-treino – perna com TVP\n`;
+    texto += `• Dor pós: ${dorPos || "–"}/10 | inchaço pós: ${inchacoPos || "–"}/10 | sensação de peso: ${pesoPerna || "–"}\n\n`;
+
+    texto += `4) Percepção geral do treino\n`;
+    texto += `• Cansaço geral: ${cansacoPos || "–"}/10 | Classificação: ${classTreino || "–"}\n`;
+    if (comentarios) {
+      texto += `• Comentários: ${comentarios}\n`;
+    }
+
+    if (alertas.length > 0) {
+      texto += `\n⚠️ Sinais de alerta reportados: ${alertas.join(", ")}.\n`;
+    }
+
+    const preview = document.getElementById("previewResumo");
+    preview.textContent = "";
+    const titulo = document.createElement("strong");
+    titulo.textContent = "Pré-visualização";
+    preview.appendChild(titulo);
+    preview.appendChild(document.createElement("br"));
+    preview.appendChild(document.createTextNode(texto));
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const btnEntrar = document.getElementById("btnEntrar");
+    if (btnEntrar) btnEntrar.addEventListener("click", entrarSemLogin);
+
+    const btnLogout = document.getElementById("btnLogout");
+    if (btnLogout) btnLogout.addEventListener("click", logout);
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const viewId = "view-" + btn.dataset.view;
+        mostrarView(viewId);
+      });
+    });
+
+    const btnAddEx = document.getElementById("btnAddExercicio");
+    if (btnAddEx) {
+      btnAddEx.addEventListener("click", criarLinhaExercicio);
+      criarLinhaExercicio();
+    }
+
+    const btnResumo = document.getElementById("btnGerarResumo");
+    if (btnResumo) {
+      btnResumo.addEventListener("click", gerarResumoDoDia);
+    }
+  });
+</script>
+</body>
+</html>

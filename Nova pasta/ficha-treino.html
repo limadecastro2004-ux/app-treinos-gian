@@ -1,0 +1,580 @@
+Html
+Copiar
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ficha de Treino – Gian Castro Personal Trainer</title>
+
+    <!-- Metatag para layout responsivo em telas menores -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Estilos básicos e responsivos -->
+    <style>
+        /* ---------------------------
+           ESTILOS GERAIS
+        ----------------------------*/
+        :root {
+            --primary-color: #0b5bff;
+            --secondary-color: #111111;
+            --text-color: #f5f5f5;
+            --text-dark: #222222;
+            --accent-gray: #e5e5e5;
+            --accent-border: #cccccc;
+            --font-main: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-main);
+            background-color: #f0f0f0;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* ---------------------------
+           CABEÇALHO E LOGO
+        ----------------------------*/
+        header {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Ajuste de tamanho da logomarca:
+           – largura máxima 120px em telas grandes,
+           – reduz automaticamente em telas menores. */
+        .logo-container img {
+            max-width: 120px;
+            height: auto;
+            display: block;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+
+        .header-text p {
+            margin: 2px 0;
+            font-size: 0.9rem;
+        }
+
+        .contact-info {
+            font-size: 0.85rem;
+            text-align: right;
+        }
+
+        /* ---------------------------
+           SEÇÕES E TÍTULOS
+        ----------------------------*/
+        section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--accent-border);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            color: var(--secondary-color);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+        }
+
+        h3 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+            color: #333333;
+        }
+
+        p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background-color: #f7f9ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .important-box {
+            background-color: #fff6e0;
+            border-left: 4px solid #ff9800;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* ---------------------------
+           TABELAS DE EXERCÍCIOS
+        ----------------------------*/
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* scroll horizontal em telas muito estreitas */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 0.88rem;
+        }
+
+        th, td {
+            border: 1px solid var(--accent-border);
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: var(--accent-gray);
+            font-weight: 600;
+        }
+
+        /* ---------------------------
+           RESPONSIVIDADE
+        ----------------------------*/
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .contact-info {
+                text-align: left;
+            }
+
+            .logo-container img {
+                max-width: 90px; /* diminui a logo em telas menores */
+            }
+
+            table {
+                font-size: 0.82rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-wrapper {
+                padding: 10px;
+            }
+
+            .header-text h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <!-- =====================================================
+         CABEÇALHO COM LOGOMARCA
+         Substitua o atributo src pelo caminho correto da sua
+         imagem (por exemplo: "img/logo-giancastro.png").
+    ====================================================== -->
+    <header>
+        <div class="logo-container">
+           <img src="logo-gian.png" alt="Logomarca Gian Castro Personal Trainer" />
+            <div class="header-text">
+                <h1>Gian Castro</h1>
+                <p>Personal Trainer</p>
+                <p>CREF: 021568-G</p>
+            </div>
+        </div>
+        <div class="contact-info">
+            <p><strong>Instagram:</strong> @gianpersonaltrainer</p>
+            <p><strong>Telefone:</strong> (21) 9 7941-9631</p>
+            <p><strong>E-mail:</strong> limadecastro2004@gmail.com</p>
+        </div>
+    </header>
+
+    <!-- =====================================================
+         INSTRUÇÕES GERAIS PARA ESCOLHA DE CARGAS
+    ====================================================== -->
+    <section>
+        <h2>Como escolher a carga de todos os exercícios</h2>
+        <div class="highlight-box">
+            <p><strong>Regra das “repetições sobrando”</strong></p>
+            <p>Em todos os exercícios você deve terminar a série com a sensação de que ainda conseguiria fazer <strong>2 a 3 repetições</strong>, mas vai parar antes.</p>
+            <ul>
+                <li>Se sobrariam <strong>6, 7, 8 repetições ou mais</strong> &rarr; está leve &rarr; aumente um pouco o peso na próxima série.</li>
+                <li>Se sobraria <strong>0 ou 1 repetição</strong> &rarr; está pesado demais &rarr; diminua um pouco o peso na próxima série.</li>
+                <li>Sempre faça o movimento <strong>sem dor aguda</strong> e com <strong>boa técnica</strong>.</li>
+            </ul>
+        </div>
+        <div class="important-box">
+            <p><strong>Cuidados especiais para você</strong></p>
+            <ul>
+                <li><strong>Perna esquerda (TVP):</strong> não force até o limite. Pare sempre com <strong>3–4 repetições sobrando</strong>. Se notar inchaço ou dor diferente do normal, pare o treino de pernas e me avise.</li>
+                <li><strong>Ombros:</strong> se sentir dor ao levantar o braço ou empurrar peso, reduza a carga, diminua a amplitude ou pule o exercício e me envie um feedback.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         TREINO A – INFERIORES + CORE (UNILATERAL, CLUSTER)
+    ====================================================== -->
+    <section>
+        <h2>Treino A – Inferiores + Core (unilateral, método cluster)</h2>
+        <p><strong>Objetivo:</strong> trabalhar quadríceps e glúteos, melhorar estabilidade de joelho/quadril e respeitar o histórico de TVP.</p>
+
+        <h3>1. Alongamento / Mobilidade (aprox. 10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries x Repetições</th>
+                    <th>Explicação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Mobilidade de tornozelo na parede</td>
+                    <td>2×10 por perna</td>
+                    <td>Sem carga. Leve o joelho em direção à parede mantendo o calcanhar no chão. Amplitude confortável.</td>
+                </tr>
+                <tr>
+                    <td>Ponte de glúteo</td>
+                    <td>2×12</td>
+                    <td>Só com peso do corpo. Suba apertando o glúteo, segure 2 segundos em cima e desça devagar.</td>
+                </tr>
+                <tr>
+                    <td>Dead bug</td>
+                    <td>2×8–10 por lado</td>
+                    <td>Movimento controlado, sem pressa, mantendo a lombar encostada no chão.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>2. Potência leve unilateral (aprox. 10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Step-up baixo explosivo</td>
+                    <td>4×(3+3) por perna</td>
+                    <td>Comece com peso do corpo. Suba rápido, desça devagar. Termine cada sequência com pelo menos 3–4 repetições sobrando. Se estiver muito fácil, use halter leve.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>3. Força – Método cluster (aprox. 30 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Leg press unilateral</td>
+                    <td>3×(5+5+5) por perna</td>
+                    <td>Escolha um peso em que, ao terminar os 3 blocos de 5 reps, você sinta que ainda faria 2–3 reps se fosse até o máximo. Se sobrar muito (6–8), aumente um pouco. Se quase não conseguir terminar, reduza o peso. Na perna esquerda, seja mais leve: mantenha 3–4 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Agachamento búlgaro (apoio atrás no banco)</td>
+                    <td>3×(4+4) por perna</td>
+                    <td>Use peso do corpo ou halter leve. Deve queimar a perna, mas não doer o joelho. Termine sentindo que faria 2–3 reps extras.</td>
+                </tr>
+                <tr>
+                    <td>Cadeira extensora unilateral</td>
+                    <td>3×(6+6) por perna</td>
+                    <td>Peso que permita movimento controlado, sem “chutar” e sem travar o joelho na extensão. Aplique a regra das 2–3 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Core – prancha lateral</td>
+                    <td>2×20–30 s por lado</td>
+                    <td>Sem carga. Se estiver muito difícil, apoie os joelhos no chão para facilitar.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         TREINO B – SUPERIORES + ESCÁPULA (UNILATERAL, CLUSTER)
+    ====================================================== -->
+    <section>
+        <h2>Treino B – Superiores + Escápula (unilateral, método cluster)</h2>
+        <p><strong>Objetivo:</strong> fortalecer costas, peito e ombros, com foco em controle escapular e proteção para o ombro.</p>
+
+        <h3>1. Alongamento / Mobilidade (aprox. 10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries x Repetições</th>
+                    <th>Explicação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Wall slides</td>
+                    <td>2×10</td>
+                    <td>Sem carga. Deslize os braços na parede até onde não sentir dor.</td>
+                </tr>
+                <tr>
+                    <td>Serrátil na parede</td>
+                    <td>2×12</td>
+                    <td>Empurre a parede afastando as escápulas, mantendo cotovelos quase no mesmo lugar.</td>
+                </tr>
+                <tr>
+                    <td>Rotação externa com elástico</td>
+                    <td>2×12 por lado</td>
+                    <td>Peso leve, cotovelo colado ao corpo, movimento pequeno e controlado.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>2. Potência leve (aprox. 8–10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Remada baixa unilateral rápida (controlada)</td>
+                    <td>3×(3+3) por lado</td>
+                    <td>Use peso leve/moderado. Puxe rápido, volte devagar, sem trancos. Não vá ao limite: deixe 3–4 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Landmine press unilateral (ou desenvolvimento neutro leve)</td>
+                    <td>3×(3+3) por lado</td>
+                    <td>Use carga leve. Suba rápido, desça devagar. Se houver dor no ombro, reduza o peso ou use só a barra / halter pequeno.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>3. Força – Método cluster (aprox. 25–30 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Remada unilateral com halter</td>
+                    <td>3×(5+5) por lado</td>
+                    <td>Escolha um halter que permita terminar os 2 blocos de 5 reps com boa postura, sem girar demais o tronco. Deve sobrar 2–3 reps.</td>
+                </tr>
+                <tr>
+                    <td>Supino unilateral com halter</td>
+                    <td>3×(4+4) por lado</td>
+                    <td>Desça o halter até onde é confortável, sem dor. Se precisar arquear muito a lombar ou sentir dor, está pesado demais. Use a regra das 2–3 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Puxada frente pegada neutra</td>
+                    <td>3×(5+5)</td>
+                    <td>Peso que permita puxar até a parte alta do peito sem jogar o corpo para trás. Ao final, sentir que faria mais 2–3 reps.</td>
+                </tr>
+                <tr>
+                    <td>Elevação lateral unilateral</td>
+                    <td>2–3×(6+6) por lado</td>
+                    <td>Halter leve. Deve cansar o músculo, mas ombro não pode doer. Se incomodar, reduza peso ou amplitude.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         TREINO C – POSTERIOR / GLÚTEOS + CORE (UNILATERAL, CLUSTER)
+    ====================================================== -->
+    <section>
+        <h2>Treino C – Posterior / Glúteos + Core (unilateral, método cluster)</h2>
+        <p><strong>Objetivo:</strong> trabalhar posterior de coxa e glúteos, protegendo lombar e respeitando a perna com TVP.</p>
+
+        <h3>1. Alongamento / Mobilidade (aprox. 10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries x Repetições</th>
+                    <th>Explicação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Cat-camel</td>
+                    <td>2×10</td>
+                    <td>Movimento suave de flexionar e estender a coluna, sem dor.</td>
+                </tr>
+                <tr>
+                    <td>Mobilidade de quadril em quatro apoios</td>
+                    <td>2×8 por perna</td>
+                    <td>Faça círculos com o quadril. Amplitude confortável, sem compensar com a lombar.</td>
+                </tr>
+                <tr>
+                    <td>Ponte de glúteo com foco unilateral</td>
+                    <td>2×10 por lado</td>
+                    <td>Apoie mais peso em uma perna, mantendo a outra como suporte leve.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>2. Potência leve (aprox. 8–10 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Hip thrust unilateral assistido</td>
+                    <td>3×(3+3) por perna</td>
+                    <td>Use peso do corpo ou anilha leve. Suba rápido, desça devagar. Não chegue ao limite; deixe 3–4 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Swing leve (bilateral ou unilateral)</td>
+                    <td>3×(4+4)</td>
+                    <td>Use kettlebell leve. Se não dominar a técnica, faça swing bilateral bem leve ou pule este exercício.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>3. Força – Método cluster (aprox. 25–30 min)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exercício</th>
+                    <th>Séries / Cluster</th>
+                    <th>Como escolher a carga</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Terra romeno unilateral com apoio</td>
+                    <td>3×(4+4) por perna</td>
+                    <td>Halter leve/moderado e apoio para a mão livre. Deve sentir a parte de trás da perna, não a lombar. Termine com 2–3 reps sobrando. Se perder equilíbrio ou sentir dor, reduza carga ou faça bilateral.</td>
+                </tr>
+                <tr>
+                    <td>Mesa flexora unilateral</td>
+                    <td>3×(6+6) por perna</td>
+                    <td>Peso que permita dobrar o joelho sem chutar. Use a regra das 2–3 reps sobrando.</td>
+                </tr>
+                <tr>
+                    <td>Cadeira abdutora</td>
+                    <td>3×12–15 (sem cluster)</td>
+                    <td>Pode usar carga um pouco mais alta, desde que não haja dor no quadril. Esforço 7–8/10.</td>
+                </tr>
+                <tr>
+                    <td>Core – prancha com toque alternado de pé</td>
+                    <td>2×10–12 toques</td>
+                    <td>Sem carga. Mantenha o tronco estável enquanto toca os pés alternadamente no chão.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         TREINO D – AERÓBIO + MOBILIDADE
+    ====================================================== -->
+    <section>
+        <h2>Treino D – Aeróbico + Mobilidade</h2>
+        <p><strong>Objetivo:</strong> melhorar condicionamento e circulação, auxiliar na recuperação entre treinos de força.</p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Sessão</th>
+                    <th>Duração</th>
+                    <th>Explicação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Caminhada ou bicicleta</td>
+                    <td>20–30 min</td>
+                    <td>Ritmo moderado: você consegue falar frases curtas, mas sente que está se exercitando. Se a perna esquerda incomodar (dor ou inchaço diferente), reduza a intensidade e me avise.</td>
+                </tr>
+                <tr>
+                    <td>Mobilidade e alongamentos</td>
+                    <td>10–15 min</td>
+                    <td>Alongar posterior de coxa, quadríceps, glúteos, peitoral e costas (2×30 s por grupo). Sensação de leve desconforto, nunca dor forte.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         RODAPÉ – OBSERVAÇÕES
+    ====================================================== -->
+    <section>
+        <h2>Cronograma de feedback e ajustes</h2>
+        <p><strong>Semanas 1–2:</strong> foco em aprender a técnica e usar a regra das “2–3 repetições sobrando”.</p>
+        <p><strong>Semanas 3–4:</strong> se o treino estiver fácil, aumente 5–10% a carga em alguns exercícios principais. Se estiver pesado, reduza um pouco.</p>
+        <p><strong>A cada 4 semanas:</strong> enviarei ajustes no plano (cargas, séries e, se necessário, troca de exercícios) com base no seu feedback.</p>
+    </section>
+</div>
+</body>
+</html>

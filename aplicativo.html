@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>App de Treinos – Gian Castro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #0050ff;
+      --primary-soft: #e3edff;
+      --primary-dark: #0030a8;
+      --accent: #16a34a;
+      --danger: #dc2626;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --border: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --radius: 12px;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* TELAS: login, troca senha, pré-cadastro, app */
+    #telaLogin,
+    #telaTrocaSenha,
+    #telaPreCadastro {
+      min-height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    /* login e troca começam visíveis/corretos via JS */
+    .login-card {
+      background: #ffffff;
+      padding: 22px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 360px;
+      color: var(--text-main);
+    }
+
+    .login-card h1 {
+      margin: 0 0 4px 0;
+      font-size: 1.35rem;
+      text-align: center;
+      color: var(--primary-dark);
+    }
+
+    .login-card p {
+      margin: 0 0 14px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .login-card label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 7px 9px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      background-color: #f9fafb;
+      color: var(--text-main);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .login-btn:hover { filter: brightness(1.05); }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    #appScreen { display: none; }
+
+    header {
+      background: linear-gradient(135deg, #ffffff, #e5edff);
+      color: var(--text-main);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0, #111827 40%, #000000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: 2px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::before {
+      content: "";
+      position: absolute;
+      width: 160%;
+      height: 2px;
+      background: var(--primary);
+      transform: rotate(-30deg);
+    }
+
+    .logo-mark span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-left h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+    }
+
+    .header-left p {
+      margin: 3px 0 0 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .logout-btn {
+      margin-top: 4px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .logout-btn:hover { background: #e5edff; }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    .tabs-main {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .tabs-main button {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .tabs-main button.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .layout-grid { grid-template-columns: 1fr; }
+      .header-right { text-align: left; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .card-title {
+      margin: 0 0 6px 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .card-subtitle {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background-color: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .badge-green {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .session-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .session-meta label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .session-meta input[type="date"],
+    .session-meta select {
+      padding: 4px 6px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: #f9fafb;
+      color: var(--text-main);
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2ff;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    td small {
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background-color: #f9fafb;
+      color: var(--text-main);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    .nome-exercicio-input {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: var(--text-main);
+    }
+
+    .btn-danger {
+      background-color: #b91c1c;
+      color: #ffffff;
+    }
+
+    .btn:hover { filter: brightness(1.05); }
+
+    .summary-item {
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .summary-item:last-child { border-bottom: none; }
+
+    .summary-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .summary-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .reco-section {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+    }
+
+    .reco-section h3 {
+      margin: 0 0 4px 0;
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+    }
+
+    .reco-section ul {
+      margin: 4px 0 0 16px;
+      padding: 0;
+    }
+
+    .reco-section li {
+      margin-bottom: 4px;
+    }
+
+    .status-bar {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+
+    .status-error { color: var(--danger); }
+
+    .preview-box {
+      border-radius: 10px;
+      border: 1px dashed var(--border);
+      padding: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #f9fafb;
+      margin-top: 6px;
+      white-space: pre-wrap;
+    }
+
+    /* Seletor de aluno para coach */
+    #seletorAlunoCoach {
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+    }
+
+    #seletorAlunoCoach input {
+      padding: 4px 6px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: #f9fafb;
+      color: var(--text-main);
+    }
+
+    #seletorAlunoCoach button {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+
+    #seletorAlunoCoach button:hover {
+      background: #e5edff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="telaLogin">
+  <div class="login-card">
+    <h1>App de Treinos</h1>
+    <p>Gian Castro Personal Trainer</p>
+
+    <label for="loginUsername">Usuário:</label>
+    <input
+      type="text"
+      id="loginUsername"
+      placeholder="ex.: joao.silva"
+    >
+
+    <label for="loginSenha">Senha:</label>
+    <input
+      type="password"
+      id="loginSenha"
+      placeholder="Sua senha"
+    >
+
+    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <div id="loginMensagem" style="margin-top:10px; color:red; font-size:0.85rem;"></div>
+
+    <p class="hint">
+      Esqueceu a senha? Entre em contato com seu coach para receber uma nova senha temporária.
+    </p>
+
+    <hr style="margin:10px 0; border:none; border-top:1px solid #e5e7eb;">
+
+    <p class="hint">
+      Ainda não tem acesso ao app?<br>
+      <a href="javascript:void(0)" onclick="mostrarPreCadastro()">Clique aqui para solicitar seu cadastro</a>.
+    </p>
+  </div>
+</div>
+
+<!-- TELA DE PRÉ-CADASTRO -->
+<div id="telaPreCadastro">
+  <div class="login-card">
+    <h1>Pré-cadastro</h1>
+    <p>Preencha seus dados para o coach liberar seu acesso.</p>
+
+    <label for="preNomeCompleto">Nome completo:</label>
+    <input type="text" id="preNomeCompleto" placeholder="Ex.: João Silva">
+
+    <label for="preEmail">E-mail (ou WhatsApp):</label>
+    <input type="text" id="preEmail" placeholder="Ex.: joao@email.com ou (00) 99999-9999">
+
+    <label for="preObjetivo">Objetivo principal:</label>
+    <input type="text" id="preObjetivo" placeholder="Ex.: Emagrecimento, hipertrofia, condicionamento...">
+
+    <button class="login-btn" onclick="enviarPreCadastro()">Enviar pedido de cadastro</button>
+    <div id="preCadastroMensagem" style="margin-top:10px; font-size:0.85rem;"></div>
+
+    <p class="hint">
+      Já tem usuário e senha?
+      <a href="javascript:void(0)" onclick="voltarParaLogin()">Voltar para o login</a>.
+    </p>
+  </div>
+</div>
+
+<!-- TELA DE TROCA DE SENHA (PRIMEIRO ACESSO / RESET) -->
+<div id="telaTrocaSenha">
+  <div class="login-card">
+    <h1>Defina sua nova senha</h1>
+    <p>Por segurança, você precisa alterar a senha inicial antes de continuar.</p>
+
+    <label for="novaSenha">Nova senha:</label>
+    <input type="password" id="novaSenha">
+
+    <label for="confirmarSenha">Confirmar nova senha:</label>
+    <input type="password" id="confirmarSenha">
+
+    <button class="login-btn" onclick="confirmarTrocaSenha()">Salvar nova senha</button>
+    <div id="trocaSenhaMensagem" style="margin-top:10px; color:red; font-size:0.85rem;"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="app-wrapper">
+  <header>
+    <div class="header-left">
+      <div class="logo-title">
+        <div class="logo-mark"><span>G</span></div>
+        <div>
+          <h1>Gian Castro Personal Trainer</h1>
+          <p id="headerSub">Usuário logado:</p>
+        </div>
+      </div>
+
+      <!-- Seletor de aluno (só aparece para coach) -->
+      <div id="seletorAlunoCoach" style="display:none;">
+        <label for="nomeAlunoSelecionado">
+          Aluno que o coach está visualizando (username, ex.: joao.silva):
+        </label>
+        <br>
+        <input type="text" id="nomeAlunoSelecionado" placeholder="username do aluno">
+        <button type="button" onclick="definirAlunoCoach()">Selecionar aluno</button>
+        <span id="infoAlunoSelecionado" style="margin-left: 8px; font-weight: bold;"></span>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-treino="A">Treino A</button>
+        <button class="tab-btn" data-treino="B">Treino B</button>
+        <button class="tab-btn" data-treino="C">Treino C</button>
+        <button class="tab-btn" data-treino="D">Treino D (Aeróbio)</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="perfilInfo"></div>
+      <button class="logout-btn" id="btnLogout">Sair</button>
+    </div>
+  </header>
+
+  <div class="tabs-main">
+    <button id="btnTabTreinos" class="active">Treinos</button>
+    <button id="btnTabRecomendacoes">Recomendações</button>
+  </div>
+
+  <div class="layout-grid">
+    <!-- COLUNA PRINCIPAL -->
+    <main class="card" id="colTreinos">
+      <h2 class="card-title">
+        <span id="treinoTitulo">Treino A – Inferiores + Core</span>
+        <span class="badge" id="badgeTreino">Cluster • Unilateral</span>
+      </h2>
+      <p class="card-subtitle">
+        Treino completo (alongamento + força), com campos para cargas e observações.
+      </p>
+
+      <div class="session-meta">
+        <div>
+          <label for="dataSessao">Data da sessão</label><br />
+          <input type="date" id="dataSessao" />
+        </div>
+        <div>
+          <label for="turnoSessao">Turno</label><br />
+          <select id="turnoSessao">
+            <option value="manha">Manhã</option>
+            <option value="tarde">Tarde</option>
+            <option value="noite">Noite</option>
+          </select>
+        </div>
+        <div>
+          <label for="percepcaoEsforco">Esforço (0–10)</label><br />
+          <input type="number" id="percepcaoEsforco" min="0" max="10" step="1" />
+        </div>
+      </div>
+
+      <h3 style="font-size:0.9rem;margin:6px 0;">1.  Alongamento / Mobilidade</h3>
+      <div class="table-wrapper">
+        <table id="tabelaAlongMob">
+          <thead>
+          <tr>
+            <th>Exercício (editável)</th>
+            <th>Séries x Reps / Tempo</th>
+            <th>Observações</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:0.9rem;margin:6px 0;">2. Força / Principal</h3>
+      <div class="table-wrapper">
+        <table id="tabelaExercicios">
+          <thead>
+          <tr>
+            <th>Exercício (editável)</th>
+            <th>Séries / Reps</th>
+            <th>Carga utilizada</th>
+            <th>Observações</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <label for="notasGerais" style="font-size:0.8rem; color:var(--text-muted);">
+        Anotações gerais da sessão (dor, fadiga, TVP, ombro, sono, etc.)
+      </label>
+      <textarea id="notasGerais"
+                placeholder="Ex.: Perna esquerda inchou um pouco, reduzir carga no próximo treino."></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnCarregar">Carregar dados da sessão</button>
+        <button class="btn btn-primary" id="btnSalvar">Salvar sessão</button>
+        <button class="btn btn-danger" id="btnLimparSessao">Limpar sessão</button>
+        <button class="btn btn-secondary" id="btnResumoDia">📝 Gerar resumo do treino</button>
+      </div>
+
+      <div class="preview-box" id="previewResumo">
+        <strong>Pré-visualização</strong><br>
+        Aqui vai aparecer um texto-resumo do treino (data, treino, cargas principais, esforço, notas) para copiar e colar.
+      </div>
+
+      <div class="status-bar" id="statusMsg"></div>
+    </main>
+
+    <!-- COLUNA LATERAL -->
+    <aside class="card">
+      <h2 class="card-title">
+        <span>Resumo</span>
+        <span class="badge-green">Visão rápida</span>
+      </h2>
+      <p class="card-subtitle">
+        Progresso e histórico resumido.
+      </p>
+
+      <div id="blocoResumo">
+        <div class="summary-item">
+          <div class="summary-title">Treino atual</div>
+          <div class="summary-text" id="resumoTreinoAtual">
+            Treino A – nenhuma sessão salva ainda.
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-title">Total de sessões salvas</div>
+          <div class="summary-text">
+            <span id="resumoTotalSessoes">0</span> sessões (A, B, C, D).
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-title">Últimas cargas (treino atual)</div>
+          <div class="summary-text" id="resumoUltimasCargas">
+            Nenhuma carga registrada.
+          </div>
+        </div>
+      </div>
+
+      <div id="blocoRecomendacoes" style="display:none;margin-top:8px;">
+        <div class="reco-section">
+          <h3>1. Carga e “reps sobrando”</h3>
+          <ul>
+            <li>Termine cada série com sensação de 2–3 repetições sobrando.</li>
+            <li>Se sobrariam muitas reps, aumente um pouco a carga.</li>
+            <li>Se não sobraria nenhuma, reduza um pouco a carga.</li>
+          </ul>
+        </div>
+
+        <div class="reco-section">
+          <h3>2. Cuidados com perna esquerda (TVP)</h3>
+          <ul>
+            <li>Evite levar à falha total, mantenha 3–4 reps sobrando.</li>
+            <li>Observe inchaço, calor ou dor diferente; se aparecer, interrompa o treino e comunique.</li>
+          </ul>
+        </div>
+
+        <div class="reco-section">
+          <h3>3. Ombros</h3>
+          <ul>
+            <li>Priorize movimentos sem dor e com pegada neutra sempre que possível.</li>
+            <li>Se a dor persistir em algum exercício, retire e registre nas observações.</li>
+          </ul>
+        </div>
+
+        <div class="reco-section">
+          <h3>4. Dicas gerais</h3>
+          <ul>
+            <li>Aquecimento de 5–10 min antes de força.</li>
+            <li>Progredir cargas devagar, especialmente em perna esquerda.</li>
+            <li>Dias ruins de sono/estresse: priorizar técnica e reduzir volume.</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  // -------------------------
+  // ESTADO DO USUÁRIO
+  // -------------------------
+  let usuarioAtual = null; 
+  // { username, tipo, nome, mustChangePassword, alunoSelecionado, senhaUsada }
+
+  // -------------------------
+  // ESTRUTURA DE TREINOS
+  // -------------------------
+  const TREINOS = {
+    A: {
+      titulo: "Treino A – Inferiores + Core (ênfase TVP)",
+      badge: "Cluster • Unilateral",
+      along: [
+        { id: "A_al1", nomePadrao: "Mobilidade de tornozelo na parede", series: "2×10 por perna" },
+        { id: "A_al2", nomePadrao: "Ponte de glúteo", series: "2×12" },
+        { id: "A_al3", nomePadrao: "Dead bug", series: "2×8–10 por lado" }
+      ],
+      forca: [
+        { id: "A1", nomePadrao: "Leg press unilateral", series: "3×(5+5+5) por perna", dica: "2–3 repetições sobrando no último bloco." },
+        { id: "A2", nomePadrao: "Agachamento búlgaro", series: "3×(4+4) por perna", dica: "Pode ser só com peso do corpo. Sem dor no joelho." },
+        { id: "A3", nomePadrao: "Cadeira extensora unilateral", series: "3×(6+6) por perna", dica: "Movimento controlado, sem chutar." },
+        { id: "A4", nomePadrao: "Prancha lateral", series: "2×20–30 s por lado", dica: "Se difícil, apoie os joelhos." }
+      ]
+    },
+    B: {
+      titulo: "Treino B – Superiores + Escápula (reabilitação de ombros)",
+      badge: "Cluster • Unilateral",
+      along: [
+        { id: "B_al1", nomePadrao: "Wall slides", series: "2×10" },
+        { id: "B_al2", nomePadrao: "Serrátil na parede", series: "2×12" },
+        { id: "B_al3", nomePadrao: "Rotação externa com elástico", series: "2×12 por lado" }
+      ],
+      forca: [
+        { id: "B1", nomePadrao: "Remada unilateral com halter", series: "3×(5+5) por lado", dica: "Postura estável, sem girar o tronco." },
+        { id: "B2", nomePadrao: "Supino unilateral com halter", series: "3×(4+4) por lado", dica: "Sem dor no ombro; amplitude confortável." },
+        { id: "B3", nomePadrao: "Puxada frente pegada neutra", series: "3×(5+5)", dica: "Evitar jogar o corpo para trás." },
+        { id: "B4", nomePadrao: "Elevação lateral unilateral", series: "2–3×(6+6) por lado", dica: "Halter leve, foco em controle." }
+      ]
+    },
+    C: {
+      titulo: "Treino C – Posterior / Glúteos + Core",
+      badge: "Cluster • Unilateral",
+      along: [
+        { id: "C_al1", nomePadrao: "Cat-camel", series: "2×10" },
+        { id: "C_al2", nomePadrao: "Mobilidade de quadril em quatro apoios", series: "2×8 por perna" },
+        { id: "C_al3", nomePadrao: "Ponte de glúteo com foco unilateral", series: "2×10 por lado" }
+      ],
+      forca: [
+        { id: "C1", nomePadrao: "Terra romeno unilateral com apoio", series: "3×(4+4) por perna", dica: "Sem dor lombar." },
+        { id: "C2", nomePadrao: "Mesa flexora unilateral", series: "3×(6+6) por perna", dica: "Movimento controlado." },
+        { id: "C3", nomePadrao: "Cadeira abdutora", series: "3×12–15", dica: "Pode ser um pouco mais pesada, sem dor." },
+        { id: "C4", nomePadrao: "Prancha com toque alternado de pé", series: "2×10–12 toques", dica: "Controle do tronco." }
+      ]
+    },
+    D: {
+      titulo: "Treino D – Aeróbico + Mobilidade",
+      badge: "Aeróbio • Recuperação",
+      along: [
+        { id: "D_al1", nomePadrao: "Alongamentos gerais", series: "10–15 min (posterior, quadríceps, glúteos, peitoral, costas)" }
+      ],
+      forca: [
+        { id: "D1", nomePadrao: "Caminhada ou bicicleta", series: "20–30 min", dica: "Ritmo moderado, ainda consegue conversar." }
+      ]
+    }
+  };
+
+  let treinoAtual = "A";
+
+  // -------------------------
+  // AJUDA: nome do "aluno ativo"
+  // -------------------------
+  function nomeDoAlunoAtivo() {
+    if (!usuarioAtual) return 'aluno.teste'; // fallback
+
+    if (usuarioAtual.tipo === 'aluno') {
+      return usuarioAtual.username;
+    }
+
+    if (usuarioAtual.tipo === 'coach') {
+      if (usuarioAtual.alunoSelecionado && usuarioAtual.alunoSelecionado.trim() !== '') {
+        return usuarioAtual.alunoSelecionado.trim();
+      }
+      return 'aluno.teste';
+    }
+
+    return 'aluno.teste';
+  }
+
+  // -------------------------
+  // LOGIN / TROCA DE SENHA
+  // -------------------------
+  async function fazerLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const senha = document.getElementById('loginSenha').value.trim();
+    const msg = document.getElementById('loginMensagem');
+
+    msg.textContent = '';
+
+    if (!username || !senha) {
+      msg.textContent = 'Preencha usuário e senha.';
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, senha })
+      });
+
+      if (!resp.ok) {
+        const erro = await resp.json().catch(() => ({}));
+        msg.textContent = erro.erro || 'Falha no login.';
+        return;
+      }
+
+      const dados = await resp.json();
+      usuarioAtual = {
+        username: dados.username,
+        tipo: dados.tipo,
+        nome: dados.nome,
+        mustChangePassword: !!dados.mustChangePassword,
+        alunoSelecionado: null,
+        senhaUsada: senha
+      };
+
+      if (usuarioAtual.mustChangePassword) {
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaPreCadastro').style.display = 'none';
+        document.getElementById('telaTrocaSenha').style.display = 'flex';
+      } else {
+        entrarNoApp();
+      }
+
+    } catch (e) {
+      console.error(e);
+      msg.textContent = 'Erro ao tentar conectar ao servidor.';
+    }
+  }
+
+  async function confirmarTrocaSenha() {
+    const nova = document.getElementById('novaSenha').value;
+    const confirma = document.getElementById('confirmarSenha').value;
+    const msg = document.getElementById('trocaSenhaMensagem');
+
+    msg.textContent = '';
+
+    if (!nova || !confirma) {
+      msg.textContent = 'Preencha os dois campos.';
+      return;
+    }
+    if (nova !== confirma) {
+      msg.textContent = 'As senhas não coincidem.';
+      return;
+    }
+    if (nova.length < 6) {
+      msg.textContent = 'Use uma senha com pelo menos 6 caracteres.';
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/alterar-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: usuarioAtual.username,
+          senhaAtual: usuarioAtual.senhaUsada,
+          novaSenha: nova
+        })
+      });
+
+      if (!resp.ok) {
+        const erro = await resp.json().catch(() => ({}));
+        msg.textContent = erro.erro || 'Erro ao alterar senha.';
+        return;
+      }
+
+      usuarioAtual.mustChangePassword = false;
+      usuarioAtual.senhaUsada = nova;
+
+      document.getElementById('telaTrocaSenha').style.display = 'none';
+      entrarNoApp();
+
+    } catch (e) {
+      console.error(e);
+      msg.textContent = 'Erro ao tentar alterar a senha.';
+    }
+  }
+
+  function entrarNoApp() {
+    document.getElementById('telaLogin').style.display = 'none';
+    document.getElementById('telaPreCadastro').style.display = 'none';
+    document.getElementById('telaTrocaSenha').style.display = 'none';
+
+    document.getElementById('appScreen').style.display = 'block';
+
+    document.getElementById('perfilInfo').textContent =
+      `${usuarioAtual.nome} (${usuarioAtual.tipo === 'coach' ? 'coach' : 'aluno'})`;
+    document.getElementById('headerSub').textContent =
+      `Perfil: ${usuarioAtual.nome} (username: ${usuarioAtual.username})`;
+
+    const seletor = document.getElementById('seletorAlunoCoach');
+    if (seletor) {
+      if (usuarioAtual.tipo === 'coach') {
+        seletor.style.display = 'block';
+        document.getElementById('infoAlunoSelecionado').textContent = 'Nenhum aluno selecionado';
+      } else {
+        seletor.style.display = 'none';
+      }
+    }
+
+    const hoje = new Date().toISOString().slice(0,10);
+    document.getElementById("dataSessao").value = hoje;
+
+    montarTabelas("A");
+    atualizarResumo();
+  }
+
+  function logout() {
+    usuarioAtual = null;
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('telaTrocaSenha').style.display = 'none';
+    document.getElementById('telaPreCadastro').style.display = 'none';
+    document.getElementById('telaLogin').style.display = 'flex';
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginSenha').value = '';
+    document.getElementById('loginMensagem').textContent = '';
+  }
+
+  // -------------------------
+  // PRÉ-CADASTRO
+  // -------------------------
+  function mostrarPreCadastro() {
+    document.getElementById('telaLogin').style.display = 'none';
+    document.getElementById('telaTrocaSenha').style.display = 'none';
+    document.getElementById('telaPreCadastro').style.display = 'flex';
+  }
+
+  function voltarParaLogin() {
+    document.getElementById('telaPreCadastro').style.display = 'none';
+    document.getElementById('telaTrocaSenha').style.display = 'none';
+    document.getElementById('telaLogin').style.display = 'flex';
+  }
+
+  async function enviarPreCadastro() {
+    const nome = document.getElementById('preNomeCompleto').value.trim();
+    const email = document.getElementById('preEmail').value.trim();
+    const objetivo = document.getElementById('preObjetivo').value.trim();
+    const msg = document.getElementById('preCadastroMensagem');
+
+    msg.style.color = 'red';
+    msg.textContent = '';
+
+    if (!nome || !email) {
+      msg.textContent = 'Preencha pelo menos nome completo e e-mail/WhatsApp.';
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/pre-cadastro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, contato: email, objetivo })
+      });
+
+      if (!resp.ok) {
+        const erro = await resp.json().catch(() => ({}));
+        msg.textContent = erro.erro || 'Erro ao enviar seu pré-cadastro.';
+        return;
+      }
+
+      msg.style.color = 'green';
+      msg.textContent = 'Pedido enviado com sucesso! O coach vai analisar e entrar em contato para liberar seu acesso.';
+
+      document.getElementById('preNomeCompleto').value = '';
+      document.getElementById('preEmail').value = '';
+      document.getElementById('preObjetivo').value = '';
+
+    } catch (e) {
+      console.error(e);
+      msg.textContent = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
+    }
+  }
+
+  // -------------------------
+  // COACH SELECIONA ALUNO
+  // -------------------------
+  function definirAlunoCoach() {
+    if (!usuarioAtual || usuarioAtual.tipo !== 'coach') return;
+
+    const nomeInput = document.getElementById('nomeAlunoSelecionado').value.trim();
+    if (!nomeInput) {
+      alert('Digite o username do aluno (ex.: joao.silva).');
+      return;
+    }
+    usuarioAtual.alunoSelecionado = nomeInput;
+    document.getElementById('infoAlunoSelecionado').textContent =
+      'Visualizando aluno: ' + nomeInput;
+
+    atualizarResumo();
+  }
+
+  // -------------------------
+  // COMUNICAÇÃO COM O SERVIDOR (treinos.json)
+  // -------------------------
+  async function carregarBase() {
+    try {
+      const resp = await fetch('/api/treinos');
+      if (!resp.ok) throw new Error('Erro ao buscar treinos no servidor');
+      const lista = await resp.json(); // [{ aluno, dados }, ...]
+
+      const idAluno = nomeDoAlunoAtivo();
+      const registro = lista.find(t => t.aluno === idAluno);
+      return registro ? (registro.dados || {}) : {};
+    } catch (e) {
+      console.error(e);
+      return {};
+    }
+  }
+
+  async function salvarBase(base) {
+    try {
+      const idAluno = nomeDoAlunoAtivo();
+      await fetch('/api/treinos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          aluno: idAluno,
+          dados: base
+        })
+      });
+    } catch (e) {
+      console.error('Erro ao salvar no servidor:', e);
+    }
+  }
+
+  // -------------------------
+  // MONTAGEM DAS TABELAS
+  // -------------------------
+  function montarTabelas(treinoId) {
+    const treino = TREINOS[treinoId];
+
+    const tbodyAlong = document.querySelector("#tabelaAlongMob tbody");
+    tbodyAlong.innerHTML = "";
+    treino.along.forEach(ex => {
+      const tr = document.createElement("tr");
+
+      const tdNome = document.createElement("td");
+      const inputNome = document.createElement("input");
+      inputNome.type = "text";
+      inputNome.value = ex.nomePadrao;
+      inputNome.classList.add("nome-exercicio-input");
+      inputNome.dataset.exercicioId = ex.id;
+      tdNome.appendChild(inputNome);
+
+      const tdSeries = document.createElement("td");
+      tdSeries.textContent = ex.series;
+
+      const tdObs = document.createElement("td");
+      const inputObs = document.createElement("textarea");
+      inputObs.rows = 2;
+      inputObs.placeholder = "Observações deste alongamento/mobilidade.";
+      inputObs.dataset.exercicioId = ex.id;
+      inputObs.classList.add("input-obs-along");
+      tdObs.appendChild(inputObs);
+
+      tr.appendChild(tdNome);
+      tr.appendChild(tdSeries);
+      tr.appendChild(tdObs);
+      tbodyAlong.appendChild(tr);
+    });
+
+    const tbodyForca = document.querySelector("#tabelaExercicios tbody");
+    tbodyForca.innerHTML = "";
+    treino.forca.forEach(ex => {
+      const tr = document.createElement("tr");
+
+      const tdNome = document.createElement("td");
+      const inputNome = document.createElement("input");
+      inputNome.type = "text";
+      inputNome.value = ex.nomePadrao;
+      inputNome.classList.add("nome-exercicio-input");
+      inputNome.dataset.exercicioId = ex.id;
+      tdNome.appendChild(inputNome);
+
+      const smallDica = document.createElement("small");
+      if (ex.dica) smallDica.textContent = ex.dica;
+      tdNome.appendChild(smallDica);
+
+      const tdSeries = document.createElement("td");
+      tdSeries.textContent = ex.series;
+
+      const tdCarga = document.createElement("td");
+      const inputCarga = document.createElement("input");
+      inputCarga.type = treinoId === "D" ? "text" : "number";
+      inputCarga.step = "0.5";
+      inputCarga.placeholder = treinoId === "D" ? "velocidade, nível, tempo" : "kg";
+      inputCarga.dataset.exercicioId = ex.id;
+      inputCarga.classList.add("input-carga");
+      tdCarga.appendChild(inputCarga);
+
+      const tdObs = document.createElement("td");
+      const inputObs = document.createElement("textarea");
+      inputObs.rows = 2;
+      inputObs.placeholder = "Observações específicas deste exercício.";
+      inputObs.dataset.exercicioId = ex.id;
+      inputObs.classList.add("input-obs");
+      tdObs.appendChild(inputObs);
+
+      tr.appendChild(tdNome);
+      tr.appendChild(tdSeries);
+      tr.appendChild(tdCarga);
+      tr.appendChild(tdObs);
+      tbodyForca.appendChild(tr);
+    });
+
+    document.getElementById("treinoTitulo").textContent = treino.titulo;
+    document.getElementById("badgeTreino").textContent = treino.badge;
+  }
+
+  // -------------------------
+  // SALVAR / CARREGAR SESSÃO
+  // -------------------------
+  async function salvarSessao() {
+    const base = await carregarBase();
+    const treino = treinoAtual;
+    const data = document.getElementById("dataSessao").value;
+    const statusMsg = document.getElementById("statusMsg");
+
+    if (!data) {
+      statusMsg.textContent = "Escolha uma data para salvar a sessão.";
+      statusMsg.classList.add("status-error");
+      return;
+    }
+
+    const turno = document.getElementById("turnoSessao").value;
+    const esforco = document.getElementById("percepcaoEsforco").value;
+    const notas = document.getElementById("notasGerais").value;
+
+    const dadosAlong = {};
+    document.querySelectorAll(".nome-exercicio-input[data-exercicio-id^='" + treino + "_al']").forEach(input => {
+      const id = input.dataset.exercicioId;
+      if (!dadosAlong[id]) dadosAlong[id] = {};
+      dadosAlong[id].nome = input.value;
+    });
+    document.querySelectorAll(".input-obs-along").forEach(input => {
+      const id = input.dataset.exercicioId;
+      if (!dadosAlong[id]) dadosAlong[id] = {};
+      dadosAlong[id].obs = input.value;
+    });
+
+    const dadosForca = {};
+    document.querySelectorAll(".nome-exercicio-input:not([data-exercicio-id^='" + treino + "_al'])").forEach(input => {
+      const id = input.dataset.exercicioId;
+      if (!dadosForca[id]) dadosForca[id] = {};
+      dadosForca[id].nome = input.value;
+    });
+    document.querySelectorAll(".input-carga").forEach(input => {
+      const id = input.dataset.exercicioId;
+      if (!dadosForca[id]) dadosForca[id] = {};
+      dadosForca[id].carga = input.value;
+    });
+    document.querySelectorAll(".input-obs").forEach(input => {
+      const id = input.dataset.exercicioId;
+      if (!dadosForca[id]) dadosForca[id] = {};
+      dadosForca[id].obs = input.value;
+    });
+
+    if (!base[treino]) base[treino] = {};
+    base[treino][data] = {
+      turno,
+      esforco,
+      notas,
+      along: dadosAlong,
+      forca: dadosForca
+    };
+
+    await salvarBase(base);
+
+    statusMsg.textContent = "Sessão salva com sucesso.";
+    statusMsg.classList.remove("status-error");
+    atualizarResumo();
+  }
+
+  async function carregarSessao() {
+    const base = await carregarBase();
+    const treino = treinoAtual;
+    const data = document.getElementById("dataSessao").value;
+    const statusMsg = document.getElementById("statusMsg");
+
+    if (!data) {
+      statusMsg.textContent = "Escolha uma data para carregar a sessão.";
+      statusMsg.classList.add("status-error");
+      return;
+    }
+    if (!base[treino] || !base[treino][data]) {
+      statusMsg.textContent = "Não há sessão salva para este treino nesta data no servidor.";
+      statusMsg.classList.add("status-error");
+      return;
+    }
+
+    const sessao = base[treino][data];
+
+    document.getElementById("turnoSessao").value = sessao.turno || "manha";
+    document.getElementById("percepcaoEsforco").value = sessao.esforco || "";
+    document.getElementById("notasGerais").value = sessao.notas || "";
+
+    const entradasNomeAlong = document.querySelectorAll(".nome-exercicio-input[data-exercicio-id^='" + treino + "_al']");
+    const entradasObsAlong = document.querySelectorAll(".input-obs-along");
+    entradasNomeAlong.forEach(input => {
+      const id = input.dataset.exercicioId;
+      input.value = (sessao.along && sessao.along[id] && sessao.along[id].nome) ||
+                    (TREINOS[treino].along.find(e => e.id === id)?.nomePadrao || "");
+    });
+    entradasObsAlong.forEach(input => {
+      const id = input.dataset.exercicioId;
+      input.value = (sessao.along && sessao.along[id] && sessao.along[id].obs) || "";
+    });
+
+    const entradasNome = document.querySelectorAll(".nome-exercicio-input:not([data-exercicio-id^='" + treino + "_al'])");
+    const entradasCarga = document.querySelectorAll(".input-carga");
+    const entradasObs = document.querySelectorAll(".input-obs");
+
+    entradasNome.forEach(input => {
+      const id = input.dataset.exercicioId;
+      input.value = (sessao.forca && sessao.forca[id] && sessao.forca[id].nome) ||
+                    (TREINOS[treino].forca.find(e => e.id === id)?.nomePadrao || "");
+    });
+    entradasCarga.forEach(input => {
+      const id = input.dataset.exercicioId;
+      input.value = (sessao.forca && sessao.forca[id] && sessao.forca[id].carga) || "";
+    });
+    entradasObs.forEach(input => {
+      const id = input.dataset.exercicioId;
+      input.value = (sessao.forca && sessao.forca[id] && sessao.forca[id].obs) || "";
+    });
+
+    statusMsg.textContent = "Sessão carregada com sucesso do servidor.";
+    statusMsg.classList.remove("status-error");
+    await atualizarResumo();
+  }
+
+  function limparSessaoAtual() {
+    document.getElementById("percepcaoEsforco").value = "";
+    document.getElementById("notasGerais").value = "";
+
+    document.querySelectorAll(".input-carga").forEach(i => i.value = "");
+    document.querySelectorAll(".input-obs").forEach(i => i.value = "");
+    document.querySelectorAll(".input-obs-along").forEach(i => i.value = "");
+
+    const treino = treinoAtual;
+    document.querySelectorAll(".nome-exercicio-input").forEach(i => {
+      const id = i.dataset.exercicioId;
+      const exAlong = TREINOS[treino].along.find(e => e.id === id);
+      const exForca = TREINOS[treino].forca.find(e => e.id === id);
+      if (exAlong) i.value = exAlong.nomePadrao;
+      if (exForca) i.value = exForca.nomePadrao;
+    });
+
+    const statusMsg = document.getElementById("statusMsg");
+    statusMsg.textContent = "Campos da sessão atual foram limpos (não apagou histórico salvo).";
+    statusMsg.classList.remove("status-error");
+  }
+
+  // -------------------------
+  // RESUMO
+  // -------------------------
+  async function atualizarResumo() {
+    const base = await carregarBase();
+
+    const resumoTotal = document.getElementById("resumoTotalSessoes");
+    const resumoTreinoAtual = document.getElementById("resumoTreinoAtual");
+    const resumoUltimasCargas = document.getElementById("resumoUltimasCargas");
+
+    let totalSessoes = 0;
+    Object.keys(base).forEach(t => {
+      totalSessoes += Object.keys(base[t] || {}).length;
+    });
+    resumoTotal.textContent = totalSessoes;
+
+    const treino = treinoAtual;
+    const treinosDoAtual = base[treino] || {};
+    const datas = Object.keys(treinosDoAtual).sort();
+
+    if (datas.length === 0) {
+      resumoTreinoAtual.textContent = `${TREINOS[treino].titulo} – nenhuma sessão salva ainda.`;
+      resumoUltimasCargas.textContent = "Nenhuma carga registrada.";
+      return;
+    }
+
+    const ultimaData = datas[datas.length - 1];
+    const ultimaSessao = treinosDoAtual[ultimaData];
+
+    resumoTreinoAtual.textContent = `${TREINOS[treino].titulo} – última sessão em ${ultimaData}.`;
+
+    const partes = [];
+    TREINOS[treino].forca.forEach(ex => {
+      const info = ultimaSessao.forca && ultimaSessao.forca[ex.id];
+      if (info && info.carga) {
+        const nomeMostrar = info.nome || ex.nomePadrao;
+        partes.push(`${nomeMostrar}: ${info.carga}`);
+      }
+    });
+
+    resumoUltimasCargas.textContent = partes.length
+      ? partes.join(" • ")
+      : "Nenhuma carga registrada para o treino atual.";
+  }
+
+  // -------------------------
+  // TABS / UI
+  // -------------------------
+  function trocarTreino(novoTreino) {
+    treinoAtual = novoTreino;
+    montarTabelas(novoTreino);
+    document.getElementById("percepcaoEsforco").value = "";
+    document.getElementById("notasGerais").value = "";
+    document.getElementById("statusMsg").textContent = "";
+    document.getElementById("previewResumo").innerHTML =
+      "<strong>Pré-visualização</strong><br>Aqui vai aparecer um texto-resumo do treino (data, treino, cargas principais, esforço, notas) para copiar e colar.";
+    atualizarResumo();
+  }
+
+  function mostrarTreinos() {
+    document.getElementById("btnTabTreinos").classList.add("active");
+    document.getElementById("btnTabRecomendacoes").classList.remove("active");
+    document.getElementById("blocoResumo").style.display = "";
+    document.getElementById("blocoRecomendacoes").style.display = "none";
+  }
+
+  function mostrarRecomendacoes() {
+    document.getElementById("btnTabTreinos").classList.remove("active");
+    document.getElementById("btnTabRecomendacoes").classList.add("active");
+    document.getElementById("blocoResumo").style.display = "none";
+    document.getElementById("blocoRecomendacoes").style.display = "";
+  }
+
+  function gerarResumoTreinoDia() {
+    const data = document.getElementById("dataSessao").value || "";
+    const treinoInfo = TREINOS[treinoAtual];
+    const esforco = document.getElementById("percepcaoEsforco").value || "";
+    const notas = document.getElementById("notasGerais").value || "";
+
+    const linhasForca = TREINOS[treinoAtual].forca;
+    const cargasTexto = [];
+    linhasForca.forEach(ex => {
+      const inputCarga = document.querySelector(`.input-carga[data-exercicio-id="${ex.id}"]`);
+      const inputNome = document.querySelector(`.nome-exercicio-input[data-exercicio-id="${ex.id}"]`);
+      const nome = (inputNome && inputNome.value) || ex.nomePadrao;
+      const carga = (inputCarga && inputCarga.value) || "";
+      if (carga) {
+        cargasTexto.push(`${nome}: ${carga}`);
+      }
+    });
+
+    let texto = "";
+    texto += `Resumo do treino – ${treinoInfo.titulo}\n`;
+    if (data) texto += `Data: ${data}\n\n`;
+
+    if (cargasTexto.length > 0) {
+      texto += `Cargas principais:\n• ${cargasTexto.join("\n• ")}\n\n`;
+    } else {
+      texto += `Cargas principais: não registradas.\n\n`;
+    }
+
+    texto += `Percepção de esforço (0–10): ${esforco || "não informado"}\n`;
+    if (notas) {
+      texto += `Notas gerais: ${notas}\n`;
+    }
+
+    const preview = document.getElementById("previewResumo");
+    preview.textContent = "";
+    const titulo = document.createElement("strong");
+    titulo.textContent = "Pré-visualização";
+    preview.appendChild(titulo);
+    preview.appendChild(document.createElement("br"));
+    preview.appendChild(document.createTextNode(texto));
+  }
+
+  // -------------------------
+  // EVENTOS
+  // -------------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    // Tela inicial: login visível
+    document.getElementById('telaLogin').style.display = 'flex';
+
+    document.getElementById("btnLogout").addEventListener("click", logout);
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        trocarTreino(btn.dataset.treino);
+      });
+    });
+
+    document.getElementById("btnSalvar").addEventListener("click", salvarSessao);
+    document.getElementById("btnCarregar").addEventListener("click", carregarSessao);
+    document.getElementById("btnLimparSessao").addEventListener("click", limparSessaoAtual);
+
+    document.getElementById("btnTabTreinos").addEventListener("click", mostrarTreinos);
+    document.getElementById("btnTabRecomendacoes").addEventListener("click", mostrarRecomendacoes);
+
+    document.getElementById("btnResumoDia").addEventListener("click", gerarResumoTreinoDia);
+  });
+</script>
+</body>
+</html>
