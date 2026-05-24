@@ -37,6 +37,15 @@ const USUARIOS = [
     tipo: 'aluno',
     nome: 'Diogo Tarlé Silva',
     deveTrocarSenha: true
+  },
+
+  // NOVO ALUNO ADICIONADO: Gian Lima
+  {
+    username: 'gian.lima',
+    senha: 'GianInit2024', // Senha inicial, ele deverá trocar
+    tipo: 'aluno',
+    nome: 'Gian Lima',
+    deveTrocarSenha: true // Força a troca de senha no primeiro login
   }
 
   // Quando tiver novos alunos reais, adicione mais blocos aqui
