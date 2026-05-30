@@ -31,3 +31,4 @@ jobs:
 
     - name: Apenas um passo de teste
       run: echo "Hello, GitHub Actions!"
+      # Teste de disparo
