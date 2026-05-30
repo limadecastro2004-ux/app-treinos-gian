@@ -1,12 +1,22 @@
-name: Teste de Validação YAML
+name: Deploy to Google Cloud
 
 on:
         push:
                 branches:
-                        - main
+                        - main # Este workflow será executado sempre que houver um push para o branch 'main'
+
+env:
+  PROJECT_ID: project-b592c6c5-e1fe-4aeb-b37
+  WIP_POOL_ID: gian-personal-github-pool
+  WIP_PROVIDER_ID: github
+  SERVICE_ACCOUNT_EMAIL: github-actions-db-access@project-b592c6c5-e1fe-4aeb-b37.iam.gserviceaccount.com
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
