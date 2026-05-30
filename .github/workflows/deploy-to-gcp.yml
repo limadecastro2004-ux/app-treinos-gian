@@ -29,8 +29,5 @@ jobs:
         workload_identity_provider: 'projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.WIP_POOL_ID }}/providers/${{ env.WIP_PROVIDER_ID }}'
         service_account: '${{ env.SERVICE_ACCOUNT_EMAIL }}'
 
-    - name: Set up Cloud SDK
-      uses: 'google-github-actions/setup-gcloud@v2'
-
     - name: Apenas um passo de teste
       run: echo "Hello, GitHub Actions!"
