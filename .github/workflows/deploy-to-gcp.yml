@@ -38,6 +38,6 @@ jobs:
 
     - name: Example: Access your database (Placeholder)
       run: |
-        echo "Aqui você colocaria os comandos para interagir com seu banco de dados."
-        # gcloud sql databases list --instance=YOUR_INSTANCE_NAME --project=${{ env.PROJECT_ID }}
-        # gcloud firestore operations list --project=${{ env.PROJECT_ID }}
+                echo "Aqui você colocaria os comandos para interagir com seu banco de dados."
+                # gcloud sql databases list --instance=YOUR_INSTANCE_NAME --project=${{ env.PROJECT_ID }}
+                # gcloud firestore operations list --project=${{ env.PROJECT_ID }}
