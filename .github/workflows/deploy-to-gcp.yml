@@ -6,7 +6,7 @@ on:
                         - main # Este workflow será executado sempre que houver um push para o branch 'main'
 
 env:
-  PROJECT_ID: project-b592c6c5-e1fe-4aeb-b37
+  PROJECT_ID: 626913821773 # <-- NÚMERO DO SEU PROJETO
   WIP_POOL_ID: gian-personal-github-pool
   WIP_PROVIDER_ID: github
   SERVICE_ACCOUNT_EMAIL: github-actions-db-access@project-b592c6c5-e1fe-4aeb-b37.iam.gserviceaccount.com
