@@ -1,6 +1,9 @@
 name: Debug OIDC Token (Official Action)
 
 on:
+  push:
+    branches:
+      - main # Dispara em push para o branch 'main'
   workflow_dispatch: # Permite disparar manualmente o workflow
 
 jobs:
