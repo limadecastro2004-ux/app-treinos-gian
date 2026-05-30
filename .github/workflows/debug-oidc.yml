@@ -1,1 +1,57 @@
+name: Debug OIDC Token (Custom Script)
 
+on:
+  push:
+    branches:
+      - main # Dispara em push para o branch 'main'
+  workflow_dispatch: # Permite disparar manualmente o workflow
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Necessário para gerar o token OIDC
+      contents: read
+    steps:
+      - name: Get and Decode OIDC Token Payload
+        id: oidc_payload_step
+        run: |
+          echo "Requesting OIDC token..."
+          # Solicita o token OIDC
+          TOKEN_RESPONSE=$(curl -s -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}")
+
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to get OIDC token response from GitHub API."
+            exit 1
+          fi
+
+          echo "Parsing token response..."
+          ID_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r '.value')
+
+          if [ -z "$ID_TOKEN" ]; then
+            echo "Error: 'value' field not found in OIDC token response or response was empty."
+            echo "Full response: $TOKEN_RESPONSE"
+            exit 1
+          fi
+
+          echo "Decoding OIDC token payload..."
+          # Extrai o payload (segunda parte do token JWT) e decodifica em base64
+          PAYLOAD=$(echo "$ID_TOKEN" | awk -F. '{print $2}' | base64 -d 2>/dev/null)
+
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to base64 decode the OIDC token payload."
+            echo "Raw ID Token: $ID_TOKEN"
+            exit 1
+          fi
+
+          echo "--- OIDC Token Payload (JSON) ---"
+          echo "$PAYLOAD"
+          echo "---------------------------------"
+
+          # Opcional: Salva o payload em um arquivo para referência futura
+          echo "$PAYLOAD" > oidc_payload.json
+          echo "::set-output name=payload_json::$(cat oidc_payload.json)"
+        shell: bash
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
