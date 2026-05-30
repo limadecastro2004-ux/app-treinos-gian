@@ -1,4 +1,4 @@
-name: Debug OIDC Token
+name: Debug OIDC Token (Official Action)
 
 on:
   workflow_dispatch: # Permite disparar manualmente o workflow
@@ -10,15 +10,7 @@ jobs:
       id-token: write # Necessário para gerar o token OIDC
       contents: read
     steps:
-      - name: Debug OIDC Token
-        run: |
-          TOKEN=$(ACTIONS_ID_TOKEN_REQUEST_URL="${ACTIONS_ID_TOKEN_REQUEST_URL}" ACTIONS_ID_TOKEN_REQUEST_TOKEN="${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" node -e '
-            const { execSync } = require("child_process");
-            const url = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
-            const token = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
-            const response = execSync(`curl -s -H "Authorization: Bearer ${token}" "${url}"`);
-            const idToken = JSON.parse(response).value;
-            const [header, payload, signature] = idToken.split(".");
-            console.log("OIDC Token Payload (Base64 Decoded):");
-            console.log(Buffer.from(payload, "base64").toString());
-          ')
+      - name: Debug OIDC Claims
+        uses: github/actions-oidc-debugger@main
+        with:
+          audience: 'https://iam.googleapis.com/projects/626913821773/locations/global/workloadIdentityPools/gian-personal-github-pool/providers/github'
