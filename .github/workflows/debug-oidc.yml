@@ -1,19 +1,1 @@
-name: Debug OIDC Token (Official Action)
 
-on:
-  push:
-    branches:
-      - main # Dispara em push para o branch 'main'
-  workflow_dispatch: # Permite disparar manualmente o workflow
-
-jobs:
-  debug:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write # Necessário para gerar o token OIDC
-      contents: read
-    steps:
-      - name: Debug OIDC Claims
-        uses: github/actions-oidc-debugger@main
-        with:
-          audience: 'https://iam.googleapis.com/projects/626913821773/locations/global/workloadIdentityPools/gian-personal-github-pool/providers/github'
