@@ -7,10 +7,8 @@ on:
 
 env:
   PROJECT_ID: 626913821773 # Seu número de projeto do Google Cloud
-  # ATUALIZADO: IDs do Workload Identity Pool e Provedor que você criou
   WIP_POOL_ID: github-actions-pool # O ID do pool que você criou
   WIP_PROVIDER_ID: github-provider # O ID do provedor que você criou
-  # ATUALIZADO: E-mail da Service Account que você criou
   SERVICE_ACCOUNT_EMAIL: github-deployer-sa@626913821773.iam.gserviceaccount.com # O e-mail completo da sua Service Account
 
 permissions:
@@ -28,9 +26,9 @@ jobs:
       id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
-        # Usando as variáveis de ambiente atualizadas
         workload_identity_provider: 'projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.WIP_POOL_ID }}/providers/${{ env.WIP_PROVIDER_ID }}'
         service_account: '${{ env.SERVICE_ACCOUNT_EMAIL }}'
+        audience: 'https://sts.googleapis.com/google-oauth-token' # <--- ESTA É A LINHA CORRIGIDA
 
     # --- Seus passos de build, deploy e teste virão aqui ---
     # Você pode adicionar comandos gcloud, docker, etc., que agora estarão autenticados.
