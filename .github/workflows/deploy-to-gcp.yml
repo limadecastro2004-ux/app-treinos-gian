@@ -1,0 +1,54 @@
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches:
+      - main # Este workflow será executado sempre que houver um push para o branch 'main'
+
+env:
+  PROJECT_ID: 626913821773 # Seu número de projeto do Google Cloud
+  WIP_POOL_ID: github-actions-pool # O ID do pool que você criou
+  WIP_PROVIDER_ID: github-provider # O ID do provedor que você criou
+  SERVICE_ACCOUNT_EMAIL: github-deployer-sa@626913821773.iam.gserviceaccount.com # O e-mail completo da sua Service Account
+
+permissions:
+  contents: 'read'
+  id-token: 'write' # ESSENCIAL para a autenticação OIDC
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        workload_identity_provider: 'projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.WIP_POOL_ID }}/providers/${{ env.WIP_PROVIDER_ID }}'
+        service_account: '${{ env.SERVICE_ACCOUNT_EMAIL }}'
+        audience: 'https://sts.googleapis.com/google-oauth-token' # <--- ESTA É A LINHA CORRIGIDA
+
+    # --- Seus passos de build, deploy e teste virão aqui ---
+    # Você pode adicionar comandos gcloud, docker, etc., que agora estarão autenticados.
+    - name: Apenas um passo de teste (Autenticação bem-sucedida)
+      run: |
+        echo "Hello, GitHub Actions! Autenticação no Google Cloud bem-sucedida."
+        # Exemplo de comando gcloud para testar a autenticação
+        gcloud auth list
+        gcloud config list project
+
+    # Exemplo de como você pode continuar com um deploy para o Cloud Run
+    # - name: Set up gcloud CLI
+    #   uses: google-github-actions/setup-gcloud@v2
+    #   with:
+    #     project_id: ${{ env.PROJECT_ID }}
+
+    # - name: Deploy to Cloud Run (Exemplo)
+    #   run: |
+    #     gcloud run deploy my-service \
+    #       --image gcr.io/${{ env.PROJECT_ID }}/my-app:latest \
+    #       --region us-central1 \
+    #       --platform managed \
+    #       --allow-unauthenticated
