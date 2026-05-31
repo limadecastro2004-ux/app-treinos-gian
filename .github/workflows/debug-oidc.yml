@@ -36,7 +36,7 @@ jobs:
 
           echo "Decoding OIDC token payload..."
           # Extrai o payload (segunda parte do token JWT) e decodifica em base64
-         PAYLOAD=$(echo "$ID_TOKEN" | awk -F. '{print $2}' | base64 -d) # Removido 2>/dev/null
+          PAYLOAD=$(echo "$ID_TOKEN" | awk -F. '{print $2}' | base64 -d) # Removido 2>/dev/null
 
           if [ $? -ne 0 ]; then
             echo "Error: Failed to base64 decode the OIDC token payload."
