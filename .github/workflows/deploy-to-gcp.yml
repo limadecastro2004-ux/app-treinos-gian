@@ -1,19 +1,21 @@
 name: Deploy to Google Cloud
 
 on:
-        push:
-                branches:
-                        - main # Este workflow será executado sempre que houver um push para o branch 'main'
+  push:
+    branches:
+      - main # Este workflow será executado sempre que houver um push para o branch 'main'
 
 env:
-  PROJECT_ID: 626913821773 # <-- NÚMERO DO SEU PROJETO
-  WIP_POOL_ID: gian-personal-github-pool
-  WIP_PROVIDER_ID: github
-  SERVICE_ACCOUNT_EMAIL: github-actions-db-access@project-b592c6c5-e1fe-4aeb-b37.iam.gserviceaccount.com
+  PROJECT_ID: 626913821773 # Seu número de projeto do Google Cloud
+  # ATUALIZADO: IDs do Workload Identity Pool e Provedor que você criou
+  WIP_POOL_ID: github-actions-pool # O ID do pool que você criou
+  WIP_PROVIDER_ID: github-provider # O ID do provedor que você criou
+  # ATUALIZADO: E-mail da Service Account que você criou
+  SERVICE_ACCOUNT_EMAIL: github-deployer-sa@626913821773.iam.gserviceaccount.com # O e-mail completo da sua Service Account
 
 permissions:
   contents: 'read'
-  id-token: 'write'
+  id-token: 'write' # ESSENCIAL para a autenticação OIDC
 
 jobs:
   deploy:
@@ -26,9 +28,29 @@ jobs:
       id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
+        # Usando as variáveis de ambiente atualizadas
         workload_identity_provider: 'projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/${{ env.WIP_POOL_ID }}/providers/${{ env.WIP_PROVIDER_ID }}'
         service_account: '${{ env.SERVICE_ACCOUNT_EMAIL }}'
 
-    - name: Apenas um passo de teste
-      run: echo "Hello, GitHub Actions!"
-      
+    # --- Seus passos de build, deploy e teste virão aqui ---
+    # Você pode adicionar comandos gcloud, docker, etc., que agora estarão autenticados.
+    - name: Apenas um passo de teste (Autenticação bem-sucedida)
+      run: |
+        echo "Hello, GitHub Actions! Autenticação no Google Cloud bem-sucedida."
+        # Exemplo de comando gcloud para testar a autenticação
+        gcloud auth list
+        gcloud config list project
+
+    # Exemplo de como você pode continuar com um deploy para o Cloud Run
+    # - name: Set up gcloud CLI
+    #   uses: google-github-actions/setup-gcloud@v2
+    #   with:
+    #     project_id: ${{ env.PROJECT_ID }}
+
+    # - name: Deploy to Cloud Run (Exemplo)
+    #   run: |
+    #     gcloud run deploy my-service \
+    #       --image gcr.io/${{ env.PROJECT_ID }}/my-app:latest \
+    #       --region us-central1 \
+    #       --platform managed \
+    #       --allow-unauthenticated
