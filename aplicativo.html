@@ -41,7 +41,7 @@
     #telaTrocaSenha,
     #telaPreCadastro {
       min-height: 100vh;
-      display: none;
+      display: none; /* Inicialmente oculto, JS vai mostrar o correto */
       align-items: center;
       justify-content: center;
       background: var(--bg);
@@ -78,7 +78,8 @@
       color: var(--text-muted);
     }
 
-    .login-card input {
+    .login-card input[type="text"],
+    .login-card input[type="password"] {
       width: 100%;
       padding: 7px 9px;
       font-size: 0.9rem;
@@ -88,6 +89,21 @@
       background-color: #f9fafb;
       color: var(--text-main);
     }
+
+    .login-card .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    .login-card .remember-me input[type="checkbox"] {
+        width: auto;
+        margin-bottom: 0;
+    }
+    .login-card .remember-me label {
+        margin-bottom: 0;
+    }
+
 
     .login-btn {
       width: 100%;
@@ -488,6 +504,51 @@
     #seletorAlunoCoach button:hover {
       background: #e5edff;
     }
+
+    /* Estilos para a lista de pré-cadastros */
+    #preCadastrosList {
+        list-style: none;
+        padding: 0;
+    }
+    #preCadastrosList li {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    #preCadastrosList li strong {
+        font-size: 0.9rem;
+        color: var(--primary-dark);
+    }
+    #preCadastrosList li span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    #preCadastrosList li .pre-cadastro-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+    }
+    #preCadastrosList li .pre-cadastro-actions button {
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+    #preCadastrosList li .pre-cadastro-actions .btn-approve {
+        background-color: var(--accent);
+        color: white;
+        border: none;
+    }
+    #preCadastrosList li .pre-cadastro-actions .btn-delete {
+        background-color: var(--danger);
+        color: white;
+        border: none;
+    }
   </style>
 </head>
 <body>
@@ -511,6 +572,11 @@
       id="loginSenha"
       placeholder="Sua senha"
     >
+
+    <div class="form-group remember-me">
+        <input type="checkbox" id="rememberMe" name="rememberMe">
+        <label for="rememberMe">Lembrar-me</label>
+    </div>
 
     <button class="login-btn" onclick="fazerLogin()">Entrar</button>
     <div id="loginMensagem" style="margin-top:10px; color:red; font-size:0.85rem;"></div>
@@ -603,6 +669,10 @@
     <div class="header-right">
       <div id="perfilInfo"></div>
       <button class="logout-btn" id="btnLogout">Sair</button>
+      <!-- NOVO LINK PARA RELATÓRIOS -->
+      <a href="/relatorios.html" class="logout-btn" id="btnRelatorios" style="display:none; margin-left: 10px;">Relatórios</a>
+      <!-- NOVO LINK PARA PRÉ-CADASTROS -->
+      <a href="javascript:void(0)" class="logout-btn" id="btnPreCadastros" style="display:none; margin-left: 10px;">Pré-cadastros</a>
     </div>
   </header>
 
@@ -692,16 +762,16 @@
     </main>
 
     <!-- COLUNA LATERAL -->
-    <aside class="card">
-      <h2 class="card-title">
-        <span>Resumo</span>
-        <span class="badge-green">Visão rápida</span>
-      </h2>
-      <p class="card-subtitle">
-        Progresso e histórico resumido.
-      </p>
-
+    <aside class="card" id="colLateral">
       <div id="blocoResumo">
+        <h2 class="card-title">
+          <span>Resumo</span>
+          <span class="badge-green">Visão rápida</span>
+        </h2>
+        <p class="card-subtitle">
+          Progresso e histórico resumido.
+        </p>
+
         <div class="summary-item">
           <div class="summary-title">Treino atual</div>
           <div class="summary-text" id="resumoTreinoAtual">
@@ -725,6 +795,10 @@
       </div>
 
       <div id="blocoRecomendacoes" style="display:none;margin-top:8px;">
+        <h2 class="card-title">
+          <span>Recomendações</span>
+          <span class="badge-green">Orientações</span>
+        </h2>
         <div class="reco-section">
           <h3>1. Carga e “reps sobrando”</h3>
           <ul>
@@ -759,6 +833,21 @@
           </ul>
         </div>
       </div>
+
+      <!-- NOVO BLOCO PARA PRÉ-CADASTROS -->
+      <div id="blocoPreCadastros" style="display:none;margin-top:8px;">
+        <h2 class="card-title">
+          <span>Pedidos de Pré-cadastro</span>
+          <button class="btn btn-secondary" onclick="carregarPreCadastros()">Atualizar</button>
+        </h2>
+        <p class="card-subtitle">
+          Novos alunos interessados em seu serviço.
+        </p>
+        <ul id="preCadastrosList">
+          <li>Nenhum pedido de pré-cadastro.</li>
+        </ul>
+        <p id="preCadastrosStatus" style="font-size:0.8rem; color:red;"></p>
+      </div>
     </aside>
   </div>
 </div>
@@ -768,7 +857,7 @@
   // ESTADO DO USUÁRIO
   // -------------------------
   let usuarioAtual = null; 
-  // { username, tipo, nome, mustChangePassword, alunoSelecionado, senhaUsada }
+  // { username, tipo, nome, mustChangePassword, alunoSelecionado }
 
   // -------------------------
   // ESTRUTURA DE TREINOS
@@ -837,7 +926,7 @@
   // AJUDA: nome do "aluno ativo"
   // -------------------------
   function nomeDoAlunoAtivo() {
-    if (!usuarioAtual) return 'aluno.teste'; // fallback
+    if (!usuarioAtual) return 'aluno.teste'; // fallback (não deveria acontecer se o usuário estiver logado)
 
     if (usuarioAtual.tipo === 'aluno') {
       return usuarioAtual.username;
@@ -847,57 +936,56 @@
       if (usuarioAtual.alunoSelecionado && usuarioAtual.alunoSelecionado.trim() !== '') {
         return usuarioAtual.alunoSelecionado.trim();
       }
-      return 'aluno.teste';
+      return 'aluno.teste'; // Fallback para coach sem aluno selecionado
     }
 
-    return 'aluno.teste';
+    return 'aluno.teste'; // Fallback geral
   }
 
   // -------------------------
-  // LOGIN / TROCA DE SENHA
+  // FUNÇÕES DE EXIBIÇÃO DE TELAS
+  // -------------------------
+  function mostrarTela(telaId) {
+    document.getElementById('telaLogin').style.display = 'none';
+    document.getElementById('telaPreCadastro').style.display = 'none';
+    document.getElementById('telaTrocaSenha').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'none';
+
+    // Para telas de login/troca/pre-cadastro, use flex para centralizar
+    if (['telaLogin', 'telaPreCadastro', 'telaTrocaSenha'].includes(telaId)) {
+        document.getElementById(telaId).style.display = 'flex';
+    } else { // Para o appScreen, use block
+        document.getElementById(telaId).style.display = 'block';
+    }
+  }
+
+  // -------------------------
+  // FUNÇÕES DE AUTENTICAÇÃO
   // -------------------------
   async function fazerLogin() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const senha = document.getElementById('loginSenha').value.trim();
+    const username = document.getElementById('loginUsername').value;
+    const senha = document.getElementById('loginSenha').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
     const msg = document.getElementById('loginMensagem');
 
     msg.textContent = '';
-
-    if (!username || !senha) {
-      msg.textContent = 'Preencha usuário e senha.';
-      return;
-    }
 
     try {
       const resp = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, senha })
+        body: JSON.stringify({ username, senha, rememberMe })
       });
 
+      const data = await resp.json();
+
       if (!resp.ok) {
-        const erro = await resp.json().catch(() => ({}));
-        msg.textContent = erro.erro || 'Falha no login.';
+        msg.textContent = data.erro || 'Erro no login.';
         return;
       }
 
-      const dados = await resp.json();
-      usuarioAtual = {
-        username: dados.username,
-        tipo: dados.tipo,
-        nome: dados.nome,
-        mustChangePassword: !!dados.mustChangePassword,
-        alunoSelecionado: null,
-        senhaUsada: senha
-      };
-
-      if (usuarioAtual.mustChangePassword) {
-        document.getElementById('telaLogin').style.display = 'none';
-        document.getElementById('telaPreCadastro').style.display = 'none';
-        document.getElementById('telaTrocaSenha').style.display = 'flex';
-      } else {
-        entrarNoApp();
-      }
+      // Redireciona com base na resposta do servidor
+      window.location.href = data.redirect;
 
     } catch (e) {
       console.error(e);
@@ -929,11 +1017,7 @@
       const resp = await fetch('/api/alterar-senha', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: usuarioAtual.username,
-          senhaAtual: usuarioAtual.senhaUsada,
-          novaSenha: nova
-        })
+        body: JSON.stringify({ novaSenha: nova }) // Não precisa de username e senhaAtual, o token já autentica
       });
 
       if (!resp.ok) {
@@ -942,11 +1026,14 @@
         return;
       }
 
-      usuarioAtual.mustChangePassword = false;
-      usuarioAtual.senhaUsada = nova;
-
-      document.getElementById('telaTrocaSenha').style.display = 'none';
-      entrarNoApp();
+      const dados = await resp.json();
+      if (dados.redirect) {
+          window.location.href = dados.redirect; // Redireciona para o aplicativo principal
+      } else {
+          // Fallback, não deve acontecer
+          alert('Senha alterada com sucesso! Redirecionando...');
+          window.location.href = '/aplicativo.html';
+      }
 
     } catch (e) {
       console.error(e);
@@ -954,59 +1041,88 @@
     }
   }
 
-  function entrarNoApp() {
-    document.getElementById('telaLogin').style.display = 'none';
-    document.getElementById('telaPreCadastro').style.display = 'none';
-    document.getElementById('telaTrocaSenha').style.display = 'none';
-
-    document.getElementById('appScreen').style.display = 'block';
-
-    document.getElementById('perfilInfo').textContent =
-      `${usuarioAtual.nome} (${usuarioAtual.tipo === 'coach' ? 'coach' : 'aluno'})`;
-    document.getElementById('headerSub').textContent =
-      `Perfil: ${usuarioAtual.nome} (username: ${usuarioAtual.username})`;
-
-    const seletor = document.getElementById('seletorAlunoCoach');
-    if (seletor) {
-      if (usuarioAtual.tipo === 'coach') {
-        seletor.style.display = 'block';
-        document.getElementById('infoAlunoSelecionado').textContent = 'Nenhum aluno selecionado';
-      } else {
-        seletor.style.display = 'none';
+  // Função para decodificar o JWT do cookie (apenas para fins de exibição no frontend, não para segurança)
+  function parseJwt (token) {
+      try {
+          return JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+          return null;
       }
+  }
+
+  // Pega o token do cookie
+  const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+  };
+
+  async function entrarNoApp() {
+    // Ao entrar no app, o usuário já está autenticado pelo cookie.
+    // Precisamos pegar as informações do usuário do token para exibir.
+    const authToken = getCookie('authToken');
+    if (authToken) {
+        const decodedToken = parseJwt(authToken);
+        if (decodedToken) {
+            usuarioAtual = {
+                username: decodedToken.username,
+                tipo: decodedToken.tipo,
+                nome: decodedToken.nome,
+                mustChangePassword: false, // Se chegou aqui, já trocou ou não precisava
+                alunoSelecionado: null
+            };
+
+            mostrarTela('appScreen');
+
+            document.getElementById('perfilInfo').textContent =
+              `${usuarioAtual.nome} (${usuarioAtual.tipo === 'coach' ? 'coach' : 'aluno'})`;
+            document.getElementById('headerSub').textContent =
+              `Perfil: ${usuarioAtual.nome} (username: ${usuarioAtual.username})`;
+
+            const seletor = document.getElementById('seletorAlunoCoach');
+            if (seletor) {
+              if (usuarioAtual.tipo === 'coach') {
+                seletor.style.display = 'block';
+                document.getElementById('infoAlunoSelecionado').textContent = 'Nenhum aluno selecionado';
+                document.getElementById('btnRelatorios').style.display = 'inline-block'; // Mostra o botão de relatórios
+                document.getElementById('btnPreCadastros').style.display = 'inline-block'; // Mostra o botão de pré-cadastros
+              } else {
+                seletor.style.display = 'none';
+                document.getElementById('btnRelatorios').style.display = 'none'; // Esconde o botão de relatórios
+                document.getElementById('btnPreCadastros').style.display = 'none'; // Esconde o botão de pré-cadastros
+              }
+            }
+
+            const hoje = new Date().toISOString().slice(0,10);
+            document.getElementById("dataSessao").value = hoje;
+
+            montarTabelas("A");
+            atualizarResumo();
+        } else {
+            // Token inválido, redireciona para login
+            window.location.href = '/api/logout';
+        }
+    } else {
+        // Não há token, redireciona para login
+        window.location.href = '/api/logout';
     }
-
-    const hoje = new Date().toISOString().slice(0,10);
-    document.getElementById("dataSessao").value = hoje;
-
-    montarTabelas("A");
-    atualizarResumo();
   }
 
   function logout() {
-    usuarioAtual = null;
-    document.getElementById('appScreen').style.display = 'none';
-    document.getElementById('telaTrocaSenha').style.display = 'none';
-    document.getElementById('telaPreCadastro').style.display = 'none';
-    document.getElementById('telaLogin').style.display = 'flex';
-    document.getElementById('loginUsername').value = '';
-    document.getElementById('loginSenha').value = '';
-    document.getElementById('loginMensagem').textContent = '';
+    // Redireciona para a rota de logout do servidor, que limpará o cookie
+    window.location.href = '/api/logout';
   }
 
   // -------------------------
-  // PRÉ-CADASTRO
+  // PRÉ-CADASTRO (PÚBLICO)
   // -------------------------
   function mostrarPreCadastro() {
-    document.getElementById('telaLogin').style.display = 'none';
-    document.getElementById('telaTrocaSenha').style.display = 'none';
-    document.getElementById('telaPreCadastro').style.display = 'flex';
+    mostrarTela('telaPreCadastro');
   }
 
   function voltarParaLogin() {
-    document.getElementById('telaPreCadastro').style.display = 'none';
-    document.getElementById('telaTrocaSenha').style.display = 'none';
-    document.getElementById('telaLogin').style.display = 'flex';
+    mostrarTela('telaLogin');
   }
 
   async function enviarPreCadastro() {
@@ -1065,10 +1181,13 @@
       'Visualizando aluno: ' + nomeInput;
 
     atualizarResumo();
+    // Recarrega o treino para o aluno selecionado
+    montarTabelas(treinoAtual);
+    carregarSessao(); // Tenta carregar a sessão para o aluno selecionado
   }
 
   // -------------------------
-  // COMUNICAÇÃO COM O SERVIDOR (treinos.json)
+  // COMUNICAÇÃO COM O SERVIDOR (treinos.json e sessoes_treino.json)
   // -------------------------
   async function carregarBase() {
     try {
@@ -1100,6 +1219,26 @@
       console.error('Erro ao salvar no servidor:', e);
     }
   }
+
+  // Função para salvar a sessão de treino concluída
+  async function salvarSessaoConcluida(sessaoData) {
+      try {
+          const resp = await fetch('/api/sessoes-treino', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sessaoData)
+          });
+          if (!resp.ok) {
+              const errorData = await resp.json();
+              throw new Error(errorData.erro || 'Erro ao registrar sessão concluída.');
+          }
+          return await resp.json();
+      } catch (e) {
+          console.error('Erro ao registrar sessão concluída:', e);
+          throw e;
+      }
+  }
+
 
   // -------------------------
   // MONTAGEM DAS TABELAS
@@ -1194,6 +1333,8 @@
     const data = document.getElementById("dataSessao").value;
     const statusMsg = document.getElementById("statusMsg");
 
+    statusMsg.textContent = ""; // Limpa mensagens anteriores
+
     if (!data) {
       statusMsg.textContent = "Escolha uma data para salvar a sessão.";
       statusMsg.classList.add("status-error");
@@ -1205,32 +1346,45 @@
     const notas = document.getElementById("notasGerais").value;
 
     const dadosAlong = {};
+    const exerciciosAlongRealizados = [];
     document.querySelectorAll(".nome-exercicio-input[data-exercicio-id^='" + treino + "_al']").forEach(input => {
       const id = input.dataset.exercicioId;
-      if (!dadosAlong[id]) dadosAlong[id] = {};
-      dadosAlong[id].nome = input.value;
-    });
-    document.querySelectorAll(".input-obs-along").forEach(input => {
-      const id = input.dataset.exercicioId;
-      if (!dadosAlong[id]) dadosAlong[id] = {};
-      dadosAlong[id].obs = input.value;
+      const obsInput = document.querySelector(`.input-obs-along[data-exercicio-id="${id}"]`);
+      const seriesPadrao = TREINOS[treino].along.find(e => e.id === id)?.series || '';
+
+      dadosAlong[id] = {
+          nome: input.value,
+          obs: obsInput ? obsInput.value : ''
+      };
+      exerciciosAlongRealizados.push({
+          nome: input.value,
+          series: seriesPadrao,
+          carga: 'N/A', // Alongamento não tem carga
+          rpe: 'N/A',
+          observacoes: obsInput ? obsInput.value : ''
+      });
     });
 
     const dadosForca = {};
+    const exerciciosForcaRealizados = [];
     document.querySelectorAll(".nome-exercicio-input:not([data-exercicio-id^='" + treino + "_al'])").forEach(input => {
       const id = input.dataset.exercicioId;
-      if (!dadosForca[id]) dadosForca[id] = {};
-      dadosForca[id].nome = input.value;
-    });
-    document.querySelectorAll(".input-carga").forEach(input => {
-      const id = input.dataset.exercicioId;
-      if (!dadosForca[id]) dadosForca[id] = {};
-      dadosForca[id].carga = input.value;
-    });
-    document.querySelectorAll(".input-obs").forEach(input => {
-      const id = input.dataset.exercicioId;
-      if (!dadosForca[id]) dadosForca[id] = {};
-      dadosForca[id].obs = input.value;
+      const cargaInput = document.querySelector(`.input-carga[data-exercicio-id="${id}"]`);
+      const obsInput = document.querySelector(`.input-obs[data-exercicio-id="${id}"]`);
+      const seriesPadrao = TREINOS[treino].forca.find(e => e.id === id)?.series || '';
+
+      dadosForca[id] = {
+          nome: input.value,
+          carga: cargaInput ? cargaInput.value : '',
+          obs: obsInput ? obsInput.value : ''
+      };
+      exerciciosForcaRealizados.push({
+          nome: input.value,
+          series: seriesPadrao,
+          carga: cargaInput ? cargaInput.value : '',
+          rpe: esforco, // RPE é geral para a sessão, mas pode ser repetido aqui
+          observacoes: obsInput ? obsInput.value : ''
+      });
     });
 
     if (!base[treino]) base[treino] = {};
@@ -1244,8 +1398,24 @@
 
     await salvarBase(base);
 
-    statusMsg.textContent = "Sessão salva com sucesso.";
-    statusMsg.classList.remove("status-error");
+    // Salvar a sessão de treino concluída para o relatório
+    const sessaoConcluidaParaRelatorio = {
+        alunoUsername: nomeDoAlunoAtivo(),
+        data: data,
+        treinoNome: TREINOS[treino].titulo,
+        exerciciosRealizados: [...exerciciosAlongRealizados, ...exerciciosForcaRealizados],
+        observacoesGerais: notas,
+        percepcaoEsforco: esforco
+    };
+    try {
+        await salvarSessaoConcluida(sessaoConcluidaParaRelatorio);
+        statusMsg.textContent = "Sessão salva e registrada para relatório com sucesso.";
+        statusMsg.classList.remove("status-error");
+    } catch (e) {
+        statusMsg.textContent = "Sessão salva, mas houve um erro ao registrar para relatório: " + e.message;
+        statusMsg.classList.add("status-error");
+    }
+
     atualizarResumo();
   }
 
@@ -1254,6 +1424,8 @@
     const treino = treinoAtual;
     const data = document.getElementById("dataSessao").value;
     const statusMsg = document.getElementById("statusMsg");
+
+    statusMsg.textContent = ""; // Limpa mensagens anteriores
 
     if (!data) {
       statusMsg.textContent = "Escolha uma data para carregar a sessão.";
@@ -1388,68 +1560,161 @@
     atualizarResumo();
   }
 
-  function mostrarTreinos() {
-    document.getElementById("btnTabTreinos").classList.add("active");
-    document.getElementById("btnTabRecomendacoes").classList.remove("active");
-    document.getElementById("blocoResumo").style.display = "";
-    document.getElementById("blocoRecomendacoes").style.display = "none";
+  function mostrarTab(tabId) {
+    // Esconde todos os blocos principais
+    document.getElementById("colTreinos").style.display = 'none';
+    document.getElementById("blocoResumo").style.display = 'none';
+    document.getElementById("blocoRecomendacoes").style.display = 'none';
+    document.getElementById("blocoPreCadastros").style.display = 'none';
+
+    // Remove 'active' de todos os botões de tabs-main
+    document.querySelectorAll(".tabs-main button").forEach(btn => btn.classList.remove("active"));
+
+    // Mostra o bloco correspondente e ativa o botão
+    if (tabId === 'treinos') {
+        document.getElementById("colTreinos").style.display = 'block';
+        document.getElementById("blocoResumo").style.display = 'block';
+        document.getElementById("btnTabTreinos").classList.add("active");
+    } else if (tabId === 'recomendacoes') {
+        document.getElementById("colTreinos").style.display = 'block'; // Mantém a coluna principal visível
+        document.getElementById("blocoRecomendacoes").style.display = 'block';
+        document.getElementById("btnTabRecomendacoes").classList.add("active");
+    } else if (tabId === 'preCadastros') {
+        // Para pré-cadastros, vamos mostrar apenas o bloco de pré-cadastros na coluna lateral
+        document.getElementById("colTreinos").style.display = 'none'; // Esconde a coluna principal de treinos
+        document.getElementById("colLateral").style.display = 'block'; // Garante que a lateral esteja visível
+        document.getElementById("blocoPreCadastros").style.display = 'block';
+        // Não há um botão específico para esta tab no tabs-main, mas podemos criar um se necessário
+        // Ou simplesmente ativar o link do header
+        carregarPreCadastros(); // Carrega os dados ao mostrar a aba
+    }
   }
 
-  function mostrarRecomendacoes() {
-    document.getElementById("btnTabTreinos").classList.remove("active");
-    document.getElementById("btnTabRecomendacoes").classList.add("active");
-    document.getElementById("blocoResumo").style.display = "none";
-    document.getElementById("blocoRecomendacoes").style.display = "";
-  }
+  // -------------------------
+  // FUNÇÕES DE PRÉ-CADASTRO (COACH)
+  // -------------------------
+  async function carregarPreCadastros() {
+      const preCadastrosList = document.getElementById('preCadastrosList');
+      const preCadastrosStatus = document.getElementById('preCadastrosStatus');
+      preCadastrosList.innerHTML = '<li>Carregando pedidos...</li>';
+      preCadastrosStatus.textContent = '';
 
-  function gerarResumoTreinoDia() {
-    const data = document.getElementById("dataSessao").value || "";
-    const treinoInfo = TREINOS[treinoAtual];
-    const esforco = document.getElementById("percepcaoEsforco").value || "";
-    const notas = document.getElementById("notasGerais").value || "";
+      try {
+          const resp = await fetch('/api/pre-cadastro');
+          if (!resp.ok) {
+              const errorData = await resp.json().catch(() => ({}));
+              throw new Error(errorData.erro || 'Erro ao buscar pré-cadastros.');
+          }
+          const preCadastros = await resp.json();
 
-    const linhasForca = TREINOS[treinoAtual].forca;
-    const cargasTexto = [];
-    linhasForca.forEach(ex => {
-      const inputCarga = document.querySelector(`.input-carga[data-exercicio-id="${ex.id}"]`);
-      const inputNome = document.querySelector(`.nome-exercicio-input[data-exercicio-id="${ex.id}"]`);
-      const nome = (inputNome && inputNome.value) || ex.nomePadrao;
-      const carga = (inputCarga && inputCarga.value) || "";
-      if (carga) {
-        cargasTexto.push(`${nome}: ${carga}`);
+          preCadastrosList.innerHTML = ''; // Limpa a lista
+          if (preCadastros.length === 0) {
+              preCadastrosList.innerHTML = '<li>Nenhum pedido de pré-cadastro pendente.</li>';
+          } else {
+              preCadastros.forEach(pedido => {
+                  const li = document.createElement('li');
+                  li.innerHTML = `
+                      <strong>${pedido.nome}</strong>
+                      <span>Contato: ${pedido.contato}</span>
+                      <span>Objetivo: ${pedido.objetivo || 'Não informado'}</span>
+                      <span>Data: ${new Date(pedido.data).toLocaleDateString('pt-BR')}</span>
+                      <div class="pre-cadastro-actions">
+                          <button class="btn-approve" onclick="aprovarPreCadastro(${pedido.id}, '${pedido.nome}', '${pedido.contato}')">Aprovar</button>
+                          <button class="btn-delete" onclick="excluirPreCadastro(${pedido.id})">Excluir</button>
+                      </div>
+                  `;
+                  preCadastrosList.appendChild(li);
+              });
+          }
+      } catch (e) {
+          console.error('Erro ao carregar pré-cadastros:', e);
+          preCadastrosStatus.textContent = 'Erro ao carregar pré-cadastros: ' + e.message;
+          preCadastrosList.innerHTML = '<li>Erro ao carregar pedidos.</li>';
       }
-    });
-
-    let texto = "";
-    texto += `Resumo do treino – ${treinoInfo.titulo}\n`;
-    if (data) texto += `Data: ${data}\n\n`;
-
-    if (cargasTexto.length > 0) {
-      texto += `Cargas principais:\n• ${cargasTexto.join("\n• ")}\n\n`;
-    } else {
-      texto += `Cargas principais: não registradas.\n\n`;
-    }
-
-    texto += `Percepção de esforço (0–10): ${esforco || "não informado"}\n`;
-    if (notas) {
-      texto += `Notas gerais: ${notas}\n`;
-    }
-
-    const preview = document.getElementById("previewResumo");
-    preview.textContent = "";
-    const titulo = document.createElement("strong");
-    titulo.textContent = "Pré-visualização";
-    preview.appendChild(titulo);
-    preview.appendChild(document.createElement("br"));
-    preview.appendChild(document.createTextNode(texto));
   }
 
+  async function aprovarPreCadastro(idPreCadastro, nomeCompleto, contato) {
+      const preCadastrosStatus = document.getElementById('preCadastrosStatus');
+      preCadastrosStatus.textContent = '';
+
+      // Sugere um username e senha inicial simples
+      const usernameSugestao = nomeCompleto.toLowerCase().replace(/\s/g, '.').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const senhaSugestao = 'Aluno123'; // Senha inicial padrão
+
+      const username = prompt(`Aprovar ${nomeCompleto}?\nSugira um username (ex: ${usernameSugestao}):`, usernameSugestao);
+      if (!username) return; // Usuário cancelou
+
+      const senhaInicial = prompt(`Defina uma senha inicial para ${username} (sugestão: ${senhaSugestao}):`, senhaSugestao);
+      if (!senhaInicial) return; // Usuário cancelou
+
+      try {
+          const resp = await fetch('/api/aprovar-pre-cadastro', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idPreCadastro, username, senhaInicial, nomeCompleto })
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+              preCadastrosStatus.textContent = data.erro || 'Erro ao aprovar pré-cadastro.';
+              preCadastrosStatus.style.color = 'red';
+              return;
+          }
+
+          preCadastrosStatus.textContent = data.mensagem;
+          preCadastrosStatus.style.color = 'green';
+          carregarPreCadastros(); // Recarrega a lista
+      } catch (e) {
+          console.error('Erro ao aprovar pré-cadastro:', e);
+          preCadastrosStatus.textContent = 'Erro de conexão ao aprovar pré-cadastro.';
+          preCadastrosStatus.style.color = 'red';
+      }
+  }
+
+  async function excluirPreCadastro(idPreCadastro) {
+      if (!confirm('Tem certeza que deseja excluir este pedido de pré-cadastro?')) {
+          return;
+      }
+
+      const preCadastrosStatus = document.getElementById('preCadastrosStatus');
+      preCadastrosStatus.textContent = '';
+
+      try {
+          const resp = await fetch(`/api/pre-cadastro/${idPreCadastro}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' }
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+              preCadastrosStatus.textContent = data.erro || 'Erro ao excluir pré-cadastro.';
+              preCadastrosStatus.style.color = 'red';
+              return;
+          }
+
+          preCadastrosStatus.textContent = data.mensagem;
+          preCadastrosStatus.style.color = 'green';
+          carregarPreCadastros(); // Recarrega a lista
+      } catch (e) {
+          console.error('Erro ao excluir pré-cadastro:', e);
+          preCadastrosStatus.textContent = 'Erro de conexão ao excluir pré-cadastro.';
+          preCadastrosStatus.style.color = 'red';
+      }
+  }
+
+
   // -------------------------
-  // EVENTOS
+  // EVENTOS E INICIALIZAÇÃO
   // -------------------------
-  document.addEventListener("DOMContentLoaded", () => {
-    // Tela inicial: login visível
-    document.getElementById('telaLogin').style.display = 'flex';
+  document.addEventListener("DOMContentLoaded", async () => {
+    const authToken = getCookie('authToken');
+    if (authToken) {
+        await entrarNoApp();
+    } else {
+        window.location.href = '/api/logout';
+    }
 
     document.getElementById("btnLogout").addEventListener("click", logout);
 
@@ -1465,10 +1730,20 @@
     document.getElementById("btnCarregar").addEventListener("click", carregarSessao);
     document.getElementById("btnLimparSessao").addEventListener("click", limparSessaoAtual);
 
-    document.getElementById("btnTabTreinos").addEventListener("click", mostrarTreinos);
-    document.getElementById("btnTabRecomendacoes").addEventListener("click", mostrarRecomendacoes);
+    // Eventos para as tabs principais (Treinos, Recomendações)
+    document.getElementById("btnTabTreinos").addEventListener("click", () => mostrarTab('treinos'));
+    document.getElementById("btnTabRecomendacoes").addEventListener("click", () => mostrarTab('recomendacoes'));
+
+    // Evento para o botão de Pré-cadastros (no header)
+    document.getElementById("btnPreCadastros").addEventListener("click", () => {
+        mostrarTab('preCadastros');
+    });
+
 
     document.getElementById("btnResumoDia").addEventListener("click", gerarResumoTreinoDia);
+
+    // Inicializa a exibição da tab de treinos
+    mostrarTab('treinos');
   });
 </script>
 </body>
