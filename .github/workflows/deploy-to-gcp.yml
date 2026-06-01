@@ -6,10 +6,10 @@ on:
       - main # Este workflow será executado sempre que houver um push para o branch 'main'
 
 env:
-  PROJECT_ID: 626913821773 # Seu número de projeto do Google Cloud
-  WIP_POOL_ID: github-actions-pool # O ID do pool que você criou
-  WIP_PROVIDER_ID: github-provider # O ID do provedor que você criou
-  SERVICE_ACCOUNT_EMAIL: github-deployer-sa@626913821773.iam.gserviceaccount.com # O e-mail completo da sua Service Account
+  PROJECT_ID: project-b592c6c5-e1fe-4aeb-b37 # <--- MUDAR AQUI
+  WIP_POOL_ID: github-actions-pool
+  WIP_PROVIDER_ID: github-provider
+  SERVICE_ACCOUNT_EMAIL: github-deployer-sa@project-b592c6c5-e1fe-4aeb-b37.iam.gserviceaccount.com # O e-mail completo da sua Service Account
 
 permissions:
   contents: 'read'
